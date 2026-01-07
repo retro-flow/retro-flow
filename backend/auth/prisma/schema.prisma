@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserType {
+  USER
+  GUEST
+}
+
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type      UserType
+  createdAt DateTime @default(now()) @map("created_at")
+
+  profile  Profile?
+  password Password?
+
+  @@map("authdb.users")
+}
+
+model Profile {
+  userId String  @id @map("user_id") @db.Uuid
+  email  String? @db.Citext
+  login  String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("authdb.profiles")
+}
+
+model Password {
+  userId       String @id @map("user_id") @db.Uuid
+  passwordHash String @map("password_hash")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("authdb.passwords")
+}
