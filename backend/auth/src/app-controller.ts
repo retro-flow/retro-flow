@@ -1,10 +1,12 @@
 import ms from 'ms'
 import { v4 as uuidv4 } from 'uuid'
-import { Body, Controller, Get, Post } from '@nestjs/common'
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
-import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from '@auth/auth-service'
+import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from '@auth/auth-constants'
+import { AuthGuard } from '@auth/auth-guard'
 import { BcryptService } from '@auth/bcrypt-service'
+import { BadRequestException, UnauthorizedException } from '@auth/exceptions'
 import { PrismaService } from '@auth/prisma-service'
 import { Prisma } from '@auth/prisma/client'
 import { UserType } from '@auth/prisma/enums'
@@ -18,8 +20,6 @@ import {
   UserTypeEnum,
 } from '@auth/schema'
 import { ContextService } from '@auth/vendor/async-context'
-
-import { BadRequestExeption, UnauthorizedExeption } from './exeptions'
 
 interface JwtUserPayload {
   id: string
@@ -41,6 +41,7 @@ export class AppController {
     private prisma: PrismaService,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Get('/v1/me')
   async me() {
     const token = this.context.request.cookies[ACCESS_TOKEN_COOKIE]
@@ -65,7 +66,7 @@ export class AppController {
     })
 
     if (!user || !user.profile) {
-      throw new UnauthorizedExeption({ message: 'Invalid credentials' })
+      throw new UnauthorizedException({ message: 'Invalid credentials' })
     }
 
     return new MeResponse({
@@ -113,7 +114,7 @@ export class AppController {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new BadRequestExeption({ message: 'A user with this email already exists' })
+          throw new BadRequestException({ message: 'A user with this email already exists' })
         }
       }
 
@@ -133,11 +134,11 @@ export class AppController {
     })
 
     if (!profile || !profile.user.password?.passwordHash) {
-      throw new UnauthorizedExeption({ message: 'Invalid credentials' })
+      throw new UnauthorizedException({ message: 'Invalid credentials' })
     }
 
     if (this.bcrypt.compare(payload.password, profile.user.password.passwordHash)) {
-      throw new UnauthorizedExeption({ message: 'Invalid credentials' })
+      throw new UnauthorizedException({ message: 'Invalid credentials' })
     }
 
     const accessToken = this.jwt.sign<JwtUserPayload>(
