@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/prisma"
+  provider        = "prisma-client"
+  output          = "../src/prisma"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider   = "postgresql"
+  extensions = [citext]
 }
 
 enum UserType {
@@ -24,8 +26,8 @@ model User {
 }
 
 model Profile {
-  userId String  @id @map("user_id") @db.Uuid
-  email  String? @db.Citext
+  userId String @id @map("user_id") @db.Uuid
+  email  String @unique @db.Citext
   login  String
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
