@@ -28,6 +28,32 @@ export class BadRequestException extends HttpException {
   }
 }
 
+export class ForbiddenException extends HttpException {
+  constructor(payload: { message: string }) {
+    super(
+      {
+        status: StatusEnum.Error,
+        code: 'FORBIDDEN',
+        message: payload.message,
+      } satisfies ErrorResponse,
+      HttpStatus.FORBIDDEN,
+    )
+  }
+}
+
+export class NotFoundException extends HttpException {
+  constructor(payload: { message: string }) {
+    super(
+      {
+        status: StatusEnum.Error,
+        code: 'NOT_FOUND',
+        message: payload.message,
+      } satisfies ErrorResponse,
+      HttpStatus.NOT_FOUND,
+    )
+  }
+}
+
 export class InternalErrorException extends HttpException {
   constructor(payload: { message: string }) {
     super(

@@ -15,6 +15,10 @@ export class ErrorResponse {
   }
 }
 
+export class Forbidden extends ErrorResponse {}
+
+export class NotFound extends ErrorResponse {}
+
 export class BadRequest extends ErrorResponse {}
 
 export class Unauthorized extends ErrorResponse {}
@@ -71,7 +75,30 @@ export class Board {
   seq: number
   ownerUserId: string
   createdAt: string
+
+  constructor(payload: {
+    id: string
+    title: string
+    seq: number
+    ownerUserId: string
+    createdAt: Date
+  }) {
+    this.id = payload.id
+    this.title = payload.title
+    this.seq = payload.seq
+    this.ownerUserId = payload.ownerUserId
+    this.createdAt = payload.createdAt.toISOString()
+  }
+}
+
+export class BoardSnapshot {
+  id: string
+  title: string
+  seq: number
+  ownerUserId: string
+  createdAt: string
   invites: Invite[]
+  columns: Column[]
 
   constructor(payload: {
     id: string
@@ -80,13 +107,25 @@ export class Board {
     ownerUserId: string
     createdAt: Date
     invites: Invite[]
+    columns: Column[]
   }) {
     this.id = payload.id
     this.title = payload.title
     this.seq = payload.seq
     this.invites = payload.invites
-    this.ownerUserId = payload.ownerUserId
-    this.createdAt = payload.createdAt.toISOString()
+    this.columns = payload.columns
+  }
+}
+
+export class Column {
+  id: string
+  position: number
+  title: string
+
+  constructor(payload: Column) {
+    this.id = payload.id
+    this.position = payload.position
+    this.title = payload.title
   }
 }
 
@@ -100,4 +139,15 @@ export class Invite {
     this.expiresAt = payload.expiresAt?.toISOString() ?? null
     this.token = payload.token
   }
+}
+
+export class CreateColumnRequest {
+  @IsString()
+  @IsNotEmpty()
+  boardId: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(200)
+  title: string
 }

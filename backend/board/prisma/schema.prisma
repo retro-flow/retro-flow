@@ -17,6 +17,7 @@ model Board {
   createdAt   DateTime @default(now()) @map("created_at")
 
   invites BoardInvite[]
+  columns Column[]
 
   @@index([ownerUserId], map: "idx_boards_owner_user_id")
   @@map("boarddb.boards")
@@ -42,4 +43,16 @@ model BoardInvite {
   @@unique([token], map: "ux_board_invites_token")
   @@index([expiresAt], map: "idx_board_invites_expires_at")
   @@map("boarddb.board_invites")
+}
+
+model Column {
+  id       String  @id @default(uuid())
+  boardId  String  @map("board_id")
+  title    String
+  position Decimal @db.Decimal(18, 6)
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@index([boardId, position], map: "idx_columns_board_id_position")
+  @@map("boarddb.columns")
 }

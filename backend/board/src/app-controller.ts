@@ -1,14 +1,15 @@
-import { createHash } from 'node:crypto'
-
 import { customAlphabet } from 'nanoid'
-import { Body, Controller, Get, Post } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post } from '@nestjs/common'
 
 import { AuthService } from '@app/auth-service'
 import { PrismaService } from '@app/prisma-service'
 
+import { NotFoundException } from './exceptions'
 import { mapInviteType } from './mapper'
 import {
   Board,
+  BoardSnapshot,
+  Column,
   CreateBoardRequest,
   DeleteBoardRequest,
   Invite,
@@ -29,31 +30,59 @@ export class AppController {
     const boards = await this.prisma.board.findMany({
       where: { ownerUserId: user.id },
       orderBy: { createdAt: 'desc' },
+    })
+
+    return new OkResponse(boards.map((board) => new Board(board)))
+  }
+
+  @Get('/v1/boards/:boardId')
+  async getBoard(@Param('boardId') boardId: string) {
+    const board = await this.prisma.board.findUnique({
+      where: {
+        id: boardId,
+      },
       include: {
         invites: {
           select: {
             token: true,
             type: true,
+            expiresAt: true,
+          },
+        },
+        columns: {
+          orderBy: {
+            position: 'asc',
+          },
+          select: {
+            id: true,
+            title: true,
+            position: true,
           },
         },
       },
     })
 
+    // TODO: Throws forbidden when not member.
+    if (!board) {
+      throw new NotFoundException({ message: 'Board not found' })
+    }
+
     return new OkResponse(
-      boards.map(
-        (board) =>
-          new Board({
-            ...board,
-            invites: board.invites.map(
-              (invite) =>
-                new Invite({
-                  type: mapInviteType(invite.type),
-                  token: invite.token,
-                  expiresAt: null,
-                }),
-            ),
-          }),
-      ),
+      new BoardSnapshot({
+        ...board,
+        invites: board.invites.map((invite) => {
+          return new Invite({
+            ...invite,
+            type: mapInviteType(invite.type),
+          })
+        }),
+        columns: board.columns.map((column) => {
+          return new Column({
+            ...column,
+            position: column.position.toNumber(),
+          })
+        }),
+      }),
     )
   }
 
@@ -73,29 +102,9 @@ export class AppController {
           },
         },
       },
-      include: {
-        invites: {
-          select: {
-            token: true,
-            type: true,
-          },
-        },
-      },
     })
 
-    return new OkResponse(
-      new Board({
-        ...board,
-        invites: board.invites.map(
-          (invite) =>
-            new Invite({
-              type: mapInviteType(invite.type),
-              token: invite.token,
-              expiresAt: null,
-            }),
-        ),
-      }),
-    )
+    return new OkResponse(new Board(board))
   }
 
   @Post('/v1/boards/delete')
@@ -125,29 +134,9 @@ export class AppController {
       data: {
         title: body.title,
       },
-      include: {
-        invites: {
-          select: {
-            token: true,
-            type: true,
-          },
-        },
-      },
     })
 
-    return new OkResponse(
-      new Board({
-        ...board,
-        invites: board.invites.map(
-          (invite) =>
-            new Invite({
-              type: mapInviteType(invite.type),
-              token: invite.token,
-              expiresAt: null,
-            }),
-        ),
-      }),
-    )
+    return new OkResponse(new Board(board))
   }
 
   private generateInviteToken() {
