@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt'
 
 import { AppController } from '@app/app-controller'
 import { AuthService } from '@app/auth-service'
+import { CardController } from '@app/card-controller'
 import { ColumnController } from '@app/column-controller'
 import { HttpExceptionFilter } from '@app/http-exception-filter'
 import { PrismaService } from '@app/prisma-service'
@@ -18,7 +19,7 @@ import { AsyncContextModule } from '@app/vendor/async-context'
       secret: '0922c20292311238cb1cd7db7c815608',
     }),
   ],
-  controllers: [AppController, ColumnController],
+  controllers: [AppController, ColumnController, CardController],
   providers: [
     AuthService,
     PrismaService,
