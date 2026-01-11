@@ -16,7 +16,7 @@ model Board {
   ownerUserId String   @map("owner_user_id")
   createdAt   DateTime @default(now()) @map("created_at")
 
-  invite BoardInvite[]
+  invites BoardInvite[]
 
   @@index([ownerUserId], map: "idx_boards_owner_user_id")
   @@map("boarddb.boards")
@@ -32,14 +32,14 @@ enum InviteType {
 model BoardInvite {
   boardId   String     @map("board_id")
   type      InviteType @map("type")
-  tokenHash Bytes      @map("token_hash")
+  token     String     @map("token") @db.VarChar(64)
   expiresAt DateTime?  @map("expires_at")
   createdAt DateTime   @default(now()) @map("created_at")
 
   board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   @@id([boardId, type])
-  @@unique([tokenHash], map: "ux_board_invites_token_hash")
+  @@unique([token], map: "ux_board_invites_token")
   @@index([expiresAt], map: "idx_board_invites_expires_at")
   @@map("boarddb.board_invites")
 }

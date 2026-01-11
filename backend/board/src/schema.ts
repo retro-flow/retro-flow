@@ -26,9 +26,9 @@ export enum UserTypeEnum {
   Guest = 'guest',
 }
 
-export enum InviteTypeEnum {
-  Temporary = 'TEMPORARY',
-  Permanent = 'PERMANENT',
+export enum InviteType {
+  Temporary = 'temporary',
+  Permanent = 'permanent',
 }
 
 export class OkResponse<T> {
@@ -71,6 +71,7 @@ export class Board {
   seq: number
   ownerUserId: string
   createdAt: string
+  invites: Invite[]
 
   constructor(payload: {
     id: string
@@ -78,11 +79,25 @@ export class Board {
     seq: number
     ownerUserId: string
     createdAt: Date
+    invites: Invite[]
   }) {
     this.id = payload.id
     this.title = payload.title
     this.seq = payload.seq
+    this.invites = payload.invites
     this.ownerUserId = payload.ownerUserId
     this.createdAt = payload.createdAt.toISOString()
+  }
+}
+
+export class Invite {
+  type: InviteType
+  expiresAt: string | null
+  token: string
+
+  constructor(payload: { expiresAt: Date | null; token: string; type: InviteType }) {
+    this.type = payload.type
+    this.expiresAt = payload.expiresAt?.toISOString() ?? null
+    this.token = payload.token
   }
 }
