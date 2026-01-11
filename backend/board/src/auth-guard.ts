@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
   async canActivate() {
     try {
       const token = this.context.request.cookies[ACCESS_TOKEN_COOKIE]
-      const isValid = await this.jwt.verify(token)
+      const isValid = this.jwt.verify(token)
 
       return isValid
     } catch {
