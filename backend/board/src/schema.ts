@@ -161,3 +161,17 @@ export class DeleteColumnRequest {
   @IsNotEmpty()
   id: string
 }
+
+export class JoinBoardRequest {
+  @IsString()
+  @IsNotEmpty()
+  token: string
+}
+
+export class JoinBoardResponse {
+  boardId: string
+
+  constructor(payload: JoinBoardResponse) {
+    this.boardId = payload.boardId
+  }
+}

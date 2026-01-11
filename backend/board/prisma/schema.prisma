@@ -18,9 +18,23 @@ model Board {
 
   invites BoardInvite[]
   columns Column[]
+  members BoardMember[]
 
   @@index([ownerUserId], map: "idx_boards_owner_user_id")
   @@map("boarddb.boards")
+}
+
+model BoardMember {
+  id        String   @id @default(uuid())
+  boardId   String   @map("board_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@unique([boardId, userId], map: "ux_board_members_board_user")
+  @@index([userId], map: "idx_board_members_user")
+  @@map("boarddb.board_members")
 }
 
 enum InviteType {

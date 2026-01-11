@@ -2,10 +2,10 @@ import { customAlphabet } from 'nanoid'
 import { Body, Controller, Get, Param, Post } from '@nestjs/common'
 
 import { AuthService } from '@app/auth-service'
+import { ForbiddenException, NotFoundException } from '@app/exceptions'
+import { mapInviteType } from '@app/mapper'
 import { PrismaService } from '@app/prisma-service'
-
-import { NotFoundException } from './exceptions'
-import { mapInviteType } from './mapper'
+import { InviteType } from '@app/prisma/enums'
 import {
   Board,
   BoardSnapshot,
@@ -13,9 +13,11 @@ import {
   CreateBoardRequest,
   DeleteBoardRequest,
   Invite,
+  JoinBoardRequest,
+  JoinBoardResponse,
   OkResponse,
   UpdateBoardRequest,
-} from './schema'
+} from '@app/schema'
 
 @Controller()
 export class AppController {
@@ -137,6 +139,47 @@ export class AppController {
     })
 
     return new OkResponse(new Board(board))
+  }
+
+  @Post('/v1/boards/join')
+  async joinBoard(@Body() body: JoinBoardRequest) {
+    const user = await this.auth.getCurrentUser()
+    const invite = await this.prisma.boardInvite.findUnique({
+      where: { token: body.token },
+      select: {
+        boardId: true,
+        type: true,
+        expiresAt: true,
+        board: { select: { ownerUserId: true } },
+      },
+    })
+
+    if (!invite) {
+      throw new ForbiddenException({ message: 'Invalid invite token' })
+    }
+
+    if (
+      invite.type === InviteType.TEMPORARY &&
+      (!invite.expiresAt || invite.expiresAt <= new Date())
+    ) {
+      throw new ForbiddenException({ message: 'Invite token expired' })
+    }
+
+    await this.prisma.boardMember.upsert({
+      where: {
+        boardId_userId: {
+          userId: user.id,
+          boardId: invite.boardId,
+        },
+      },
+      create: {
+        boardId: invite.boardId,
+        userId: user.id,
+      },
+      update: {},
+    })
+
+    return new OkResponse(new JoinBoardResponse({ boardId: invite.boardId }))
   }
 
   private generateInviteToken() {
