@@ -151,3 +151,13 @@ export class CreateColumnRequest {
   @MaxLength(200)
   title: string
 }
+
+export class DeleteColumnRequest {
+  @IsString()
+  @IsNotEmpty()
+  boardId: string
+
+  @IsString()
+  @IsNotEmpty()
+  id: string
+}

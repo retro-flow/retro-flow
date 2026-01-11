@@ -3,7 +3,7 @@ import { Body, Controller, Post } from '@nestjs/common'
 import { AuthService } from '@app/auth-service'
 import { PrismaService } from '@app/prisma-service'
 import { Prisma } from '@app/prisma/client'
-import { OkResponse, type CreateColumnRequest } from '@app/schema'
+import { DeleteColumnRequest, OkResponse, type CreateColumnRequest } from '@app/schema'
 
 import { ForbiddenException } from './exceptions'
 
@@ -26,6 +26,19 @@ export class ColumnController {
       return tx.column.create({
         data: { boardId: body.boardId, title: body.title, position },
       })
+    })
+
+    return new OkResponse({})
+  }
+
+  @Post('/v1/boards/columns/delete')
+  async deleteColumn(@Body() body: DeleteColumnRequest) {
+    const user = await this.auth.getCurrentUser()
+
+    await this.assertBoardOwner(body.boardId, user.id)
+
+    await this.prisma.column.delete({
+      where: { id: body.id, boardId: body.boardId },
     })
 
     return new OkResponse({})
