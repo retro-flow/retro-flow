@@ -15,7 +15,6 @@ import { AsyncContextModule } from '@app/vendor/async-context'
   imports: [
     AsyncContextModule,
     JwtModule.register({
-      global: true,
       secret: '0922c20292311238cb1cd7db7c815608',
     }),
   ],

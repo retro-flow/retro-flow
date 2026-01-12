@@ -9,6 +9,7 @@ import { InviteType } from '@app/prisma/enums'
 import {
   Board,
   BoardSnapshot,
+  Card,
   Column,
   CreateBoardRequest,
   DeleteBoardRequest,
@@ -59,6 +60,14 @@ export class AppController {
             id: true,
             title: true,
             position: true,
+            cards: {
+              select: {
+                id: true,
+                text: true,
+                position: true,
+                userLogin: true,
+              },
+            },
           },
         },
       },
@@ -82,6 +91,12 @@ export class AppController {
           return new Column({
             ...column,
             position: column.position.toNumber(),
+            cards: column.cards.map((card) => {
+              return new Card({
+                ...card,
+                position: card.position.toNumber(),
+              })
+            }),
           })
         }),
       }),

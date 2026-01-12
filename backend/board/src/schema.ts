@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator'
+import { IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator'
 
 export enum StatusEnum {
   Ok = 'ok',
@@ -121,11 +121,13 @@ export class Column {
   id: string
   position: number
   title: string
+  cards: Card[]
 
   constructor(payload: Column) {
     this.id = payload.id
     this.position = payload.position
     this.title = payload.title
+    this.cards = payload.cards
   }
 }
 
@@ -173,5 +175,37 @@ export class JoinBoardResponse {
 
   constructor(payload: JoinBoardResponse) {
     this.boardId = payload.boardId
+  }
+}
+
+export class CreateCardRequest {
+  @IsUUID()
+  columnId: string
+
+  @IsUUID()
+  boardId: string
+
+  @IsString()
+  @IsNotEmpty()
+  text: string
+}
+
+export class UpdateCardRequest {
+  @IsString()
+  @IsNotEmpty()
+  text: string
+}
+
+export class Card {
+  id: string
+  text: string
+  userLogin: string
+  position: number
+
+  constructor(payload: Card) {
+    this.id = payload.id
+    this.text = payload.text
+    this.userLogin = payload.userLogin
+    this.position = payload.position
   }
 }

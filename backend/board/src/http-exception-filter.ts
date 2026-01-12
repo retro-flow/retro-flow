@@ -16,8 +16,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const res = ctx.getResponse<Response>()
     const status = exception.getStatus()
 
-    console.log('>>> exception', exception)
-
     const data = exception.getResponse()
     const result = this.isErrorResponse(data) ? data : this.getFallbackErrorResponse(status)
 

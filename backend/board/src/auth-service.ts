@@ -12,6 +12,7 @@ enum UserType {
 interface JwtUserPayload {
   id: string
   type: UserType
+  login: string
 }
 
 interface JwtGuestPayload {

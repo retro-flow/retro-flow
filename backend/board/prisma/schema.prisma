@@ -19,6 +19,7 @@ model Board {
   invites BoardInvite[]
   columns Column[]
   members BoardMember[]
+  cards   Card[]
 
   @@index([ownerUserId], map: "idx_boards_owner_user_id")
   @@map("boarddb.boards")
@@ -65,8 +66,41 @@ model Column {
   title    String
   position Decimal @db.Decimal(18, 6)
 
-  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  board Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards Card[]
 
   @@index([boardId, position], map: "idx_columns_board_id_position")
   @@map("boarddb.columns")
+}
+
+model Card {
+  id        String   @id @default(uuid())
+  boardId   String   @map("board_id")
+  columnId  String   @map("column_id")
+  position  Decimal  @db.Decimal(18, 6)
+  text      String   @db.Text
+  userId    String   @map("user_id")
+  userLogin String   @map("user_login")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  board  Board      @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  column Column     @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  likes  CardLike[]
+
+  @@index([boardId, columnId, position], map: "idx_cards_board_id_column_id_position")
+  @@index([userId], map: "idx_cards_author_id")
+  @@map("boarddb.cards")
+}
+
+model CardLike {
+  id     String @id @default(uuid())
+  cardId String @map("card_id")
+  userId String @map("user_id")
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([cardId, userId], map: "ux_card_likes_card_user")
+  @@index([userId], map: "idx_card_likes_user")
+  @@map("boarddb.card_likes")
 }
