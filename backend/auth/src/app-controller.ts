@@ -6,7 +6,11 @@ import { JwtService } from '@nestjs/jwt'
 import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from '@auth/auth-constants'
 import { AuthGuard } from '@auth/auth-guard'
 import { BcryptService } from '@auth/bcrypt-service'
-import { BadRequestException, UnauthorizedException } from '@auth/exceptions'
+import {
+  BadRequestException,
+  InternalErrorException,
+  UnauthorizedException,
+} from '@auth/exceptions'
 import { PrismaService } from '@auth/prisma-service'
 import { Prisma } from '@auth/prisma/client'
 import { UserType } from '@auth/prisma/enums'
@@ -24,6 +28,7 @@ import { ContextService } from '@auth/vendor/async-context'
 interface JwtUserPayload {
   id: string
   type: UserTypeEnum
+  login: string
 }
 
 interface JwtGuestPayload {
@@ -62,6 +67,7 @@ export class AppController {
 
     const user = await this.prisma.user.findUnique({
       include: { profile: true },
+      // @ts-expect-error (TODO: fix types)
       where: { id: data.id },
     })
 
@@ -100,10 +106,19 @@ export class AppController {
             },
           },
         },
+        include: {
+          profile: {
+            select: { login: true },
+          },
+        },
       })
 
+      if (!result.profile) {
+        throw new InternalErrorException({ message: 'Profile not found' })
+      }
+
       const accessToken = this.jwt.sign<JwtUserPayload>(
-        { id: result.id, type: UserTypeEnum.User },
+        { id: result.id, type: UserTypeEnum.User, login: result.profile.login },
         { expiresIn: ms('30m') },
       )
       const refreshToken = this.jwt.sign({ id: result.id }, { expiresIn: ms('90d') })
@@ -127,22 +142,22 @@ export class AppController {
     const profile = await this.prisma.profile.findUnique({
       include: {
         user: {
-          select: { id: true, password: true },
+          select: { id: true, password: { select: { passwordHash: true } } },
         },
       },
       where: { email: payload.email },
     })
 
-    if (!profile || !profile.user.password?.passwordHash) {
+    if (!profile?.user.password?.passwordHash) {
       throw new UnauthorizedException({ message: 'Invalid credentials' })
     }
 
-    if (this.bcrypt.compare(payload.password, profile.user.password.passwordHash)) {
+    if (!this.bcrypt.compare(payload.password, profile.user.password.passwordHash)) {
       throw new UnauthorizedException({ message: 'Invalid credentials' })
     }
 
     const accessToken = this.jwt.sign<JwtUserPayload>(
-      { id: profile.user.id, type: UserTypeEnum.User },
+      { id: profile.user.id, type: UserTypeEnum.User, login: profile.login },
       { expiresIn: ms('24Hours') },
     )
     const refreshToken = this.jwt.sign({ id: profile.user.id }, { expiresIn: ms('90Days') })
