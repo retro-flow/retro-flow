@@ -196,6 +196,11 @@ export class UpdateCardRequest {
   text: string
 }
 
+export class DeleteCardRequest {
+  @IsUUID()
+  id: string
+}
+
 export class Card {
   id: string
   text: string

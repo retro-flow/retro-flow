@@ -4,7 +4,7 @@ import { AuthService } from '@app/auth-service'
 import { ForbiddenException, NotFoundException } from '@app/exceptions'
 import { PrismaService } from '@app/prisma-service'
 import { Prisma } from '@app/prisma/client'
-import { CreateCardRequest, OkResponse } from '@app/schema'
+import { CreateCardRequest, DeleteCardRequest, OkResponse } from '@app/schema'
 
 @Controller()
 export class CardController {
@@ -17,7 +17,7 @@ export class CardController {
   async createCard(@Body() body: CreateCardRequest) {
     const user = await this.auth.getCurrentUser()
 
-    await this.assertBoardAccess(body.boardId, user.id)
+    await this.authorizeBoardAccess(body.boardId, user.id)
 
     await this.prisma.$transaction(async (tx) => {
       const column = await tx.column.findFirst({
@@ -50,16 +50,41 @@ export class CardController {
   async updateCard() {}
 
   @Delete('/v1/cards/delete')
-  async deleteCard() {}
+  async deleteCard(@Body() body: DeleteCardRequest) {
+    const user = await this.auth.getCurrentUser()
 
-  private async assertBoardAccess(boardId: string, userId: string) {
+    const card = await this.prisma.card.findUnique({
+      where: { id: body.id },
+      select: { id: true, boardId: true, userId: true },
+    })
+
+    if (!card) {
+      throw new NotFoundException({ message: 'Card not found' })
+    }
+
+    const access = await this.authorizeBoardAccess(card.boardId, user.id)
+
+    if (!access.owner) {
+      const isAuthor = card.userId === user.id
+
+      if (!isAuthor) {
+        throw new ForbiddenException({ message: 'Can delete only own cards' })
+      }
+    }
+
+    await this.prisma.card.delete({ where: { id: body.id } })
+
+    return new OkResponse({ id: card.id })
+  }
+
+  private async authorizeBoardAccess(boardId: string, userId: string) {
     const isOwner = await this.prisma.board.findFirst({
       where: { id: boardId, ownerUserId: userId },
       select: { id: true },
     })
 
     if (isOwner) {
-      return true
+      return { owner: true, member: true }
     }
 
     const isMember = await this.prisma.boardMember.findFirst({
@@ -71,7 +96,7 @@ export class CardController {
       throw new ForbiddenException({ message: 'Not a board member' })
     }
 
-    return true
+    return { owner: false, member: true }
   }
 
   private async nextCardPositionAtEnd(
