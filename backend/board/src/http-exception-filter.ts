@@ -3,6 +3,7 @@ import {
   Catch,
   HttpException,
   HttpStatus,
+  Logger,
   type ArgumentsHost,
   type ExceptionFilter,
 } from '@nestjs/common'
@@ -11,18 +12,22 @@ import { ErrorResponse, StatusEnum } from '@app/schema'
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
+  #logger = new Logger(HttpExceptionFilter.name)
+
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
     const res = ctx.getResponse<Response>()
     const status = exception.getStatus()
 
     const data = exception.getResponse()
-    const result = this.isErrorResponse(data) ? data : this.getFallbackErrorResponse(status)
+    const result = this.#isErrorResponse(data) ? data : this.#getFallbackErrorResponse(status)
+
+    this.#logger.error(exception, exception.stack)
 
     res.status(status).json(result)
   }
 
-  private isErrorResponse(data: unknown): data is ErrorResponse {
+  #isErrorResponse(data: unknown): data is ErrorResponse {
     return (
       typeof data === 'object' &&
       data !== null &&
@@ -33,7 +38,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     )
   }
 
-  private getFallbackErrorResponse(status: HttpStatus) {
+  #getFallbackErrorResponse(status: HttpStatus) {
     return {
       status: StatusEnum.Error,
       code: status === HttpStatus.REQUEST_TIMEOUT ? 'REQUEST_TIMEOUT' : 'INTERNAL_ERROR',

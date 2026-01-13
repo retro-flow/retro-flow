@@ -6,7 +6,8 @@ import { Logger as NestLogger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { ExpressAdapter, type NestExpressApplication } from '@nestjs/platform-express'
 
-import { AppModule } from './app-module'
+import { AppModule } from '@app/app-module'
+import { ConsoleLoggerService } from '@app/console-logger-service'
 
 async function createApp() {
   if (import.meta.hot) {
@@ -22,6 +23,9 @@ async function createApp() {
   const adapter = new ExpressAdapter()
   const app = await NestFactory.create<NestExpressApplication>(AppModule, adapter, {
     bufferLogs: true,
+    logger: new ConsoleLoggerService({
+      prefix: 'board',
+    }),
   })
 
   app.use(cookieParser())
