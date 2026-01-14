@@ -1,4 +1,11 @@
-import { Body, Controller, Delete, Post } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  NotFoundException,
+  Post,
+} from '@nestjs/common'
 
 import { AuthService } from '@app/auth-service'
 import { PrismaService } from '@app/prisma-service'
@@ -15,6 +22,22 @@ export class LikeController {
   async createLike(@Body() body: CreateCardLikeRequest) {
     const user = await this.auth.getCurrentUser()
 
+    const card = await this.prisma.card.findUnique({
+      where: { id: body.cardId },
+      select: { id: true, boardId: true },
+    })
+
+    if (!card) {
+      throw new NotFoundException({ message: 'Card not found' })
+    }
+
+    await this.#authorizeBoardAccess(card.boardId, user.id)
+
+    await this.prisma.cardLike.createMany({
+      data: [{ cardId: card.id, userId: user.id, userLogin: user.login }],
+      skipDuplicates: true,
+    })
+
     return new OkResponse({})
   }
 
@@ -23,5 +46,27 @@ export class LikeController {
     const user = await this.auth.getCurrentUser()
 
     return new OkResponse({})
+  }
+
+  async #authorizeBoardAccess(boardId: string, userId: string) {
+    const isOwner = await this.prisma.board.findFirst({
+      where: { id: boardId, ownerUserId: userId },
+      select: { id: true },
+    })
+
+    if (isOwner) {
+      return { owner: true, member: true }
+    }
+
+    const isMember = await this.prisma.boardMember.findFirst({
+      where: { boardId, userId: userId },
+      select: { id: true },
+    })
+
+    if (!isMember) {
+      throw new ForbiddenException({ message: 'Not a board member' })
+    }
+
+    return { owner: false, member: true }
   }
 }
