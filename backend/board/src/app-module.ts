@@ -2,6 +2,7 @@ import { ClassSerializerInterceptor, Module, ValidationPipe } from '@nestjs/comm
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 import { JwtModule } from '@nestjs/jwt'
 
+import { AnyExceptionFilter } from '@app/any-exception-filter'
 import { AppController } from '@app/app-controller'
 import { AuthService } from '@app/auth-service'
 import { CardController } from '@app/card-controller'
@@ -26,6 +27,7 @@ import { AsyncContextModule } from '@app/vendor/async-context'
     { provide: APP_PIPE, useClass: ValidationPipe },
     { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
     { provide: APP_INTERCEPTOR, useClass: TimeoutInterceptor },
+    { provide: APP_FILTER, useClass: AnyExceptionFilter },
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
   ],
 })
