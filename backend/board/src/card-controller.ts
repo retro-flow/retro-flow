@@ -4,7 +4,7 @@ import { AuthService } from '@app/auth-service'
 import { ForbiddenException, NotFoundException } from '@app/exceptions'
 import { PrismaService } from '@app/prisma-service'
 import { Prisma } from '@app/prisma/client'
-import { CreateCardRequest, DeleteCardRequest, OkResponse } from '@app/schema'
+import { CreateCardRequest, DeleteCardRequest, OkResponse, UpdateCardRequest } from '@app/schema'
 
 @Controller()
 export class CardController {
@@ -47,7 +47,37 @@ export class CardController {
   }
 
   @Patch('/v1/cards/update')
-  async updateCard() {}
+  async updateCard(@Body() body: UpdateCardRequest) {
+    const user = await this.auth.getCurrentUser()
+
+    const card = await this.prisma.card.findUnique({
+      where: { id: body.id },
+      select: { id: true, boardId: true, userId: true },
+    })
+
+    if (!card) {
+      throw new NotFoundException({ message: 'Card not found' })
+    }
+
+    const access = await this.authorizeBoardAccess(card.boardId, user.id)
+
+    if (!access.owner) {
+      const isAuthor = card.userId === user.id
+
+      if (!isAuthor) {
+        throw new ForbiddenException({ message: 'Can edit only own cards' })
+      }
+    }
+
+    await this.prisma.card.update({
+      where: { id: body.id },
+      data: {
+        text: body.text,
+      },
+    })
+
+    return new OkResponse({})
+  }
 
   @Delete('/v1/cards/delete')
   async deleteCard(@Body() body: DeleteCardRequest) {

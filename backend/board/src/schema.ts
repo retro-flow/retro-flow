@@ -191,6 +191,9 @@ export class CreateCardRequest {
 }
 
 export class UpdateCardRequest {
+  @IsUUID()
+  id: string
+
   @IsString()
   @IsNotEmpty()
   text: string
