@@ -94,9 +94,10 @@ model Card {
 }
 
 model CardLike {
-  id     String @id @default(uuid())
-  cardId String @map("card_id")
-  userId String @map("user_id")
+  id        String @id @default(uuid())
+  cardId    String @map("card_id")
+  userId    String @map("user_id")
+  userLogin String @map("user_login")
 
   card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
 

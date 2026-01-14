@@ -217,3 +217,16 @@ export class Card {
     this.position = payload.position
   }
 }
+
+export class CreateCardLikeRequest {
+  @IsUUID()
+  cardId: string
+}
+
+export class DeleteCardLikeRequest {
+  @IsUUID()
+  id: string
+
+  @IsUUID()
+  cardId: string
+}

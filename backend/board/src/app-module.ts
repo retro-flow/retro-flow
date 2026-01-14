@@ -7,6 +7,7 @@ import { AuthService } from '@app/auth-service'
 import { CardController } from '@app/card-controller'
 import { ColumnController } from '@app/column-controller'
 import { HttpExceptionFilter } from '@app/http-exception-filter'
+import { LikeController } from '@app/like-controller'
 import { PrismaService } from '@app/prisma-service'
 import { TimeoutInterceptor } from '@app/timeout-interceptor'
 import { AsyncContextModule } from '@app/vendor/async-context'
@@ -18,7 +19,7 @@ import { AsyncContextModule } from '@app/vendor/async-context'
       secret: '0922c20292311238cb1cd7db7c815608',
     }),
   ],
-  controllers: [AppController, ColumnController, CardController],
+  controllers: [AppController, ColumnController, CardController, LikeController],
   providers: [
     AuthService,
     PrismaService,
