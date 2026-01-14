@@ -8,41 +8,43 @@ import {
   type ExceptionFilter,
 } from '@nestjs/common'
 
-import { ErrorResponse, StatusEnum } from '@app/schema'
-
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   #logger = new Logger(HttpExceptionFilter.name)
 
   catch(exception: HttpException, host: ArgumentsHost) {
-    const ctx = host.switchToHttp()
-    const res = ctx.getResponse<Response>()
-    const status = exception.getStatus()
+    const http = host.switchToHttp()
+    const response = http.getResponse<Response>()
 
-    const data = exception.getResponse()
-    const result = this.#isErrorResponse(data) ? data : this.#getFallbackErrorResponse(status)
+    const status = exception.getStatus()
+    const payload = exception.getResponse()
+
+    const result = this.#getErrorResponse(payload)
 
     this.#logger.error(exception, exception.stack)
 
-    res.status(status).json(result)
+    response.status(status).json(result)
   }
 
-  #isErrorResponse(data: unknown): data is ErrorResponse {
-    return (
-      typeof data === 'object' &&
-      data !== null &&
-      'status' in data &&
-      'code' in data &&
-      'message' in data &&
-      data.status === StatusEnum.Error
-    )
-  }
+  #getErrorResponse(data: string | object) {
+    const response = { status: 'error', message: '', code: 'INTERNAL_ERROR' }
 
-  #getFallbackErrorResponse(status: HttpStatus) {
-    return {
-      status: StatusEnum.Error,
-      code: status === HttpStatus.REQUEST_TIMEOUT ? 'REQUEST_TIMEOUT' : 'INTERNAL_ERROR',
-      message: '',
-    } satisfies ErrorResponse
+    if (typeof data === 'object' && data !== null) {
+      if ('message' in data) {
+        const message = Array.isArray(data.message) ? data.message : [data.message]
+        response.message = message.join(', ')
+      }
+      if ('code' in data && typeof data.code === 'string') {
+        response.code = data.code
+      }
+      if ('statusCode' in data && typeof data.statusCode === 'number') {
+        const code = HttpStatus[data.statusCode]
+        if (code !== undefined) {
+          response.code = code
+        }
+      }
+    }
+
+    return response
   }
 }
