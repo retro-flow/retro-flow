@@ -45,6 +45,21 @@ export class LikeController {
   async deleteLike(@Body() body: DeleteCardLikeRequest) {
     const user = await this.auth.getCurrentUser()
 
+    const card = await this.prisma.card.findUnique({
+      where: { id: body.cardId },
+      select: { id: true, boardId: true },
+    })
+
+    if (!card) {
+      throw new NotFoundException({ message: 'Card not found' })
+    }
+
+    await this.#authorizeBoardAccess(card.boardId, user.id)
+
+    await this.prisma.cardLike.deleteMany({
+      where: { cardId: card.id, userId: user.id },
+    })
+
     return new OkResponse({})
   }
 
