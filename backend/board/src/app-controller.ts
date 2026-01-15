@@ -16,6 +16,7 @@ import {
   Invite,
   JoinBoardRequest,
   JoinBoardResponse,
+  Like,
   OkResponse,
   UpdateBoardRequest,
 } from '@app/schema'
@@ -66,6 +67,12 @@ export class AppController {
                 text: true,
                 position: true,
                 userLogin: true,
+                likes: {
+                  select: {
+                    // id: true,
+                    userLogin: true,
+                  },
+                },
               },
             },
           },
@@ -95,6 +102,9 @@ export class AppController {
               return new Card({
                 ...card,
                 position: card.position.toNumber(),
+                likes: card.likes.map((like) => {
+                  return new Like(like)
+                }),
               })
             }),
           })

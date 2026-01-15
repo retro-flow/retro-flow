@@ -210,11 +210,14 @@ export class Card {
   userLogin: string
   position: number
 
+  likes: Like[]
+
   constructor(payload: Card) {
     this.id = payload.id
     this.text = payload.text
     this.userLogin = payload.userLogin
     this.position = payload.position
+    this.likes = payload.likes
   }
 }
 
@@ -225,8 +228,13 @@ export class CreateCardLikeRequest {
 
 export class DeleteCardLikeRequest {
   @IsUUID()
-  id: string
-
-  @IsUUID()
   cardId: string
+}
+
+export class Like {
+  userLogin: string
+
+  constructor(payload: Like) {
+    this.userLogin = payload.userLogin
+  }
 }

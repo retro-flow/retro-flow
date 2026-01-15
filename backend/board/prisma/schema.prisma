@@ -94,14 +94,14 @@ model Card {
 }
 
 model CardLike {
-  id        String @id @default(uuid())
   cardId    String @map("card_id")
   userId    String @map("user_id")
   userLogin String @map("user_login")
 
   card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
 
-  @@unique([cardId, userId], map: "ux_card_likes_card_user")
+  @@id([cardId, userId])
   @@index([userId], map: "idx_card_likes_user")
+  @@index([cardId], map: "idx_card_likes_card")
   @@map("boarddb.card_likes")
 }
