@@ -1,9 +1,10 @@
 {
-  "name": "vite-plugin-self-server",
+  "name": "@retro-flow/vite-plugin-self-server",
   "version": "0.0.0",
   "private": "true",
   "scripts": {
-    "build": "rollup -c rollup.config.js"
+    "build": "rollup -c rollup.config.js",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@inquirer/prompts": "7.10.1",
@@ -24,7 +25,8 @@
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "import": "./lib/index.mjs"
+      "import": "./lib/index.mjs",
+      "types": "./lib/index.d.ts"
     }
   }
 }

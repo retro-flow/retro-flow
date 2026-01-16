@@ -1,7 +1,7 @@
 import swc from 'unplugin-swc'
 import { defineConfig } from 'vite'
-import selfServer from 'vite-plugin-self-server'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import selfServer from '@retro-flow/vite-plugin-self-server'
 
 export default defineConfig(() => {
   return {

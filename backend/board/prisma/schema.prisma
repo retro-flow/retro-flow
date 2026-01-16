@@ -12,7 +12,8 @@ datasource db {
 model Board {
   id          String   @id @default(uuid()) @map("id")
   title       String   @map("title")
-  seq         Int      @default(0) @map("seq")
+  // TODO: миграция + удаление поля
+  // seq         Int      @default(0) @map("seq")
   ownerUserId String   @map("owner_user_id")
   createdAt   DateTime @default(now()) @map("created_at")
 
