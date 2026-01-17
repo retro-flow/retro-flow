@@ -10,11 +10,8 @@ export default defineConfig(() => {
       minify: false,
     },
     server: {
-      allowedHosts: ['.finance.yandex.ru'],
       host: true,
       port: Number(process.env.PORT),
-      strictPort: true,
-      proxy: {},
     },
     plugins: [
       swc.vite({
