@@ -1,0 +1,44 @@
+{
+  "name": "@retro-flow/eslint-config",
+  "version": "0.0.0",
+  "private": "true",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "lint:code": "eslint .",
+    "lint:tsc": "tsc -b  --noEmit",
+    "postinstall": "pnpm build"
+  },
+  "dependencies": {
+    "@typescript-eslint/parser": "catalog:",
+    "@typescript-eslint/utils": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-import-resolver-typescript": "catalog:",
+    "eslint-plugin-import": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "eslint-plugin-react": "catalog:",
+    "jiti": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "devDependencies": {
+    "@retro-flow/prettier-config": "workspace:*",
+    "@rollup/plugin-typescript": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "rollup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "files": [
+    "dist"
+  ],
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  }
+}

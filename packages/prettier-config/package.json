@@ -1,0 +1,36 @@
+{
+  "name": "@retro-flow/prettier-config",
+  "version": "0.0.0",
+  "private": "true",
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "lint:code": "eslint .",
+    "lint:tsc": "tsc -b  --noEmit",
+    "postinstall": "pnpm build"
+  },
+  "dependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "catalog:",
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@retro-flow/eslint-config": "workspace:*",
+    "@rollup/plugin-typescript": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "rollup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  }
+}
