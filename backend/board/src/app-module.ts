@@ -1,6 +1,7 @@
 import { ClassSerializerInterceptor, Module, ValidationPipe } from '@nestjs/common'
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 import { JwtModule } from '@nestjs/jwt'
+import { KafkaModule } from '@retro-flow/nest-kafka'
 
 import { AnyExceptionFilter } from '@app/any-exception-filter'
 import { AppController } from '@app/app-controller'
@@ -18,6 +19,11 @@ import { AsyncContextModule } from '@app/vendor/async-context'
     AsyncContextModule,
     JwtModule.register({
       secret: '0922c20292311238cb1cd7db7c815608',
+    }),
+    KafkaModule.footRoot({
+      mode: 'pub',
+      clientId: 'board-service',
+      brokers: ['localhost:9092'],
     }),
   ],
   controllers: [AppController, ColumnController, CardController, LikeController],

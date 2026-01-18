@@ -1,15 +1,24 @@
 import { Body, Controller, Delete, Patch, Post } from '@nestjs/common'
+import { KafkaService } from '@retro-flow/nest-kafka'
 
 import { AuthService } from '@app/auth-service'
 import { ForbiddenException, NotFoundException } from '@app/exceptions'
 import { PrismaService } from '@app/prisma-service'
 import { Prisma } from '@app/prisma/client'
-import { CreateCardRequest, DeleteCardRequest, OkResponse, UpdateCardRequest } from '@app/schema'
+import {
+  Card,
+  CreateCardRequest,
+  DeleteCardRequest,
+  Like,
+  OkResponse,
+  UpdateCardRequest,
+} from '@app/schema'
 
 @Controller()
 export class CardController {
   constructor(
     private auth: AuthService,
+    private kafka: KafkaService,
     private prisma: PrismaService,
   ) {}
 
@@ -19,7 +28,7 @@ export class CardController {
 
     await this.authorizeBoardAccess(body.boardId, user.id)
 
-    await this.prisma.$transaction(async (tx) => {
+    const card = await this.prisma.$transaction(async (tx) => {
       const column = await tx.column.findFirst({
         where: { id: body.columnId, boardId: body.boardId },
         select: { id: true },
@@ -41,6 +50,12 @@ export class CardController {
           userLogin: user.login,
         },
       })
+    })
+
+    await this.kafka.publish('board-events', card.boardId, {
+      type: '@BOARD/CARD_CREATED',
+      meta: { boardId: card.boardId, columId: card.columnId },
+      payload: new Card({ ...card, position: card.position.toNumber(), likes: [] }),
     })
 
     return new OkResponse({})
