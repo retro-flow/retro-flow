@@ -1,0 +1,42 @@
+{
+  "name": "@retro-flow/realtime-service",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nest build",
+    "lint:code": "eslint .",
+    "lint:tsc": "tsc -b  --noEmit",
+    "start:dev": "dotenv -- vite",
+    "start": "npm run start:dev"
+  },
+  "dependencies": {
+    "@nestjs/common": "catalog:",
+    "@nestjs/core": "catalog:",
+    "@nestjs/jwt": "catalog:",
+    "@nestjs/platform-express": "catalog:",
+    "@retro-flow/nest-kafka": "workspace:*",
+    "@retro-flow/vite-plugin-self-server": "workspace:*",
+    "chalk": "catalog:",
+    "cookie-parser": "catalog:",
+    "reflect-metadata": "catalog:",
+    "rxjs": "catalog:",
+    "ts-invariant": "catalog:"
+  },
+  "devDependencies": {
+    "@retro-flow/eslint-config": "workspace:*",
+    "@retro-flow/prettier-config": "workspace:*",
+    "@types/cookie-parser": "1.4.10",
+    "@types/express": "5.0.6",
+    "@types/node": "catalog:",
+    "dotenv": "17.2.3",
+    "dotenv-cli": "11.0.0",
+    "eslint": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:",
+    "unplugin-swc": "1.5.9",
+    "vite": "catalog:",
+    "vite-tsconfig-paths": "catalog:"
+  }
+}
