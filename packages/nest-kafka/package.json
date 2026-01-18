@@ -1,0 +1,39 @@
+{
+  "name": "@retro-flow/nest-kafka",
+  "version": "0.0.0",
+  "private": "true",
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "lint:code": "eslint .",
+    "lint:tsc": "tsc -b  --noEmit",
+    "postinstall": "pnpm build"
+  },
+  "dependencies": {
+    "kafkajs": "catalog:",
+    "ts-invariant": "catalog:",
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@nestjs/common": "catalog:",
+    "@retro-flow/eslint-config": "workspace:*",
+    "@retro-flow/prettier-config": "workspace:*",
+    "@rollup/plugin-typescript": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "rollup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  }
+}
