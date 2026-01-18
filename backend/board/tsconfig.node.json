@@ -11,5 +11,6 @@
     "allowSyntheticDefaultImports": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["vite.config.ts"]
+  "include": ["*"],
+  "exclude": ["node_modules"]
 }

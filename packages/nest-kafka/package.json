@@ -2,6 +2,7 @@
   "name": "@retro-flow/nest-kafka",
   "version": "0.0.0",
   "private": "true",
+  "type": "module",
   "scripts": {
     "build": "rollup -c rollup.config.js",
     "lint:code": "eslint .",
@@ -27,7 +28,6 @@
   "files": [
     "dist"
   ],
-  "type": "module",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
