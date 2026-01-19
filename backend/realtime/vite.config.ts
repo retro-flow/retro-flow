@@ -12,6 +12,13 @@ export default defineConfig(() => {
     server: {
       host: true,
       port: Number(process.env.PORT),
+      // proxy: {
+      //   '/ws': {
+      //     target: 'http://localhost:8083',
+      //     ws: true,
+      //     changeOrigin: true,
+      //   },
+      // },
     },
     plugins: [
       swc.vite({

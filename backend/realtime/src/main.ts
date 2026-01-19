@@ -24,7 +24,7 @@ async function createApp() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, adapter, {
     bufferLogs: true,
     logger: new ConsoleLoggerService({
-      prefix: 'board',
+      prefix: 'realtime',
     }),
   })
 

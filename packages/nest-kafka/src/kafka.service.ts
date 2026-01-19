@@ -50,7 +50,7 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
 
   async subscribe<T = unknown>(
     topic: string,
-    handler: (payload: EachMessagePayload & { json: T | undefined }) => Promise<void>,
+    handler: (payload: EachMessagePayload & { json: T | undefined }) => Promise<void> | void,
     options?: { fromBeginning?: boolean },
   ) {
     invariant(this.#consumer, 'Kafka consumer is not enabled')

@@ -15,12 +15,15 @@
     "@nestjs/core": "catalog:",
     "@nestjs/jwt": "catalog:",
     "@nestjs/platform-express": "catalog:",
+    "@nestjs/platform-socket.io": "catalog:",
+    "@nestjs/websockets": "catalog:",
     "@retro-flow/nest-kafka": "workspace:*",
     "@retro-flow/vite-plugin-self-server": "workspace:*",
     "chalk": "catalog:",
     "cookie-parser": "catalog:",
     "reflect-metadata": "catalog:",
     "rxjs": "catalog:",
+    "socket.io": "catalog:",
     "ts-invariant": "catalog:"
   },
   "devDependencies": {
