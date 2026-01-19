@@ -1,0 +1,20 @@
+{
+  "name": "@retro-flow/openapi-codegen",
+  "version": "0.0.0",
+  "private": "true",
+  "type": "module",
+  "scripts": {
+    "lint:code": "eslint .",
+    "lint:tsc": "tsc -b  --noEmit"
+  },
+  "dependencies": {
+    "@hey-api/openapi-ts": "0.90.4"
+  },
+  "devDependencies": {
+    "@retro-flow/eslint-config": "workspace:*",
+    "@retro-flow/prettier-config": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  }
+}
