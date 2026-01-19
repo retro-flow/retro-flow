@@ -48,7 +48,7 @@ export class WsGateway implements OnModuleInit, OnGatewayConnection {
       if (this.#isBoardEventData(payload.json)) {
         this.server
           .to(`board:${payload.json.meta.boardId}`)
-          .emit('board_event', payload.json.payload)
+          .emit('board.updated', payload.json.payload)
       } else {
         this.#logger.error('Is not a board event data')
       }
@@ -68,7 +68,7 @@ export class WsGateway implements OnModuleInit, OnGatewayConnection {
     }
   }
 
-  @SubscribeMessage('events')
+  @SubscribeMessage('board.join')
   async subscribeBoard(
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: SubscribeBoardPayload,
@@ -84,7 +84,7 @@ export class WsGateway implements OnModuleInit, OnGatewayConnection {
     return { status: 'ok' }
   }
 
-  @SubscribeMessage('unsubscribe_board')
+  @SubscribeMessage('board.leave')
   async unsubscribeBoard(
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: SubscribeBoardPayload,
