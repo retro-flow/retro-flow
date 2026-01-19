@@ -1,0 +1,14 @@
+{
+  "name": "@retro-flow/socket-playground",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite"
+  },
+  "devDependencies": {
+    "socket.io-client": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}
