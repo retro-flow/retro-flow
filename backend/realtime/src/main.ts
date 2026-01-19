@@ -1,7 +1,6 @@
 import { argv } from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import cookieParser from 'cookie-parser'
 import { Logger as NestLogger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { ExpressAdapter, type NestExpressApplication } from '@nestjs/platform-express'
@@ -27,8 +26,6 @@ async function createApp() {
       prefix: 'realtime',
     }),
   })
-
-  app.use(cookieParser())
 
   app.enable('trust proxy')
   app.disable('x-powered-by')

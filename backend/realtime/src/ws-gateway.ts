@@ -1,5 +1,7 @@
+import cookie from 'cookie'
 import { Server, Socket } from 'socket.io'
-import { Logger, type OnModuleInit } from '@nestjs/common'
+import { Logger, UnauthorizedException, type OnModuleInit } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import {
   ConnectedSocket,
   MessageBody,
@@ -10,6 +12,8 @@ import {
   type OnGatewayConnection,
 } from '@nestjs/websockets'
 import { KafkaService } from '@retro-flow/nest-kafka'
+
+import { ACCESS_TOKEN_COOKIE } from '@app/auth-constants'
 
 interface BoardEventData {
   type: string
@@ -34,7 +38,10 @@ export class WsGateway implements OnModuleInit, OnGatewayConnection {
 
   #logger = new Logger(WsGateway.name)
 
-  constructor(private kafka: KafkaService) {}
+  constructor(
+    private kafka: KafkaService,
+    private jwt: JwtService,
+  ) {}
 
   async onModuleInit() {
     await this.kafka.subscribe('board-events', (payload) => {
@@ -48,7 +55,18 @@ export class WsGateway implements OnModuleInit, OnGatewayConnection {
     })
   }
 
-  async handleConnection(_socket: Socket) {}
+  async handleConnection(socket: Socket) {
+    try {
+      const token = cookie.parse(socket.handshake.headers.cookie ?? '')[ACCESS_TOKEN_COOKIE]
+      const user = this.jwt.decode(token ?? '')
+
+      if (!user) {
+        throw new UnauthorizedException()
+      }
+    } catch {
+      socket.disconnect(true)
+    }
+  }
 
   @SubscribeMessage('events')
   async subscribeBoard(
