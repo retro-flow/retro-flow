@@ -1,0 +1,32 @@
+{
+  "name": "@retro-flow/nest-common",
+  "version": "0.0.0",
+  "private": "true",
+  "type": "module",
+  "scripts": {
+    "lint:code": "eslint .",
+    "lint:tsc": "tsc -b  --noEmit"
+  },
+  "dependencies": {
+    "valibot": "catalog:"
+  },
+  "devDependencies": {
+    "@nestjs/common": "catalog:",
+    "@retro-flow/eslint-config": "workspace:*",
+    "@retro-flow/prettier-config": "workspace:*",
+    "@rollup/plugin-typescript": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "rxjs": "catalog:",
+    "typescript": "catalog:"
+  },
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  }
+}
