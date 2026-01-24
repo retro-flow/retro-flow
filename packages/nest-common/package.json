@@ -7,9 +7,6 @@
     "lint:code": "eslint .",
     "lint:tsc": "tsc -b  --noEmit"
   },
-  "dependencies": {
-    "valibot": "catalog:"
-  },
   "devDependencies": {
     "@nestjs/common": "catalog:",
     "@retro-flow/eslint-config": "workspace:*",
@@ -19,7 +16,8 @@
     "eslint": "catalog:",
     "prettier": "catalog:",
     "rxjs": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "valibot": "catalog:"
   },
   "module": "./src/index.ts",
   "types": "./src/index.ts",
