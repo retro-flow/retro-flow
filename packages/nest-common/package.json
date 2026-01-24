@@ -27,6 +27,10 @@
     ".": {
       "import": "./src/index.ts",
       "types": "./src/index.ts"
+    },
+    "./valibot": {
+      "import": "./src/valibot/index.ts",
+      "types": "./src/valibot/index.ts"
     }
   }
 }
