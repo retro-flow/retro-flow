@@ -1,0 +1,239 @@
+boards:
+  get:
+    tags: [Board]
+    summary: Get boards owned by current user
+    operationId: getBoards
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/boards.yaml#/OkBoardsResponse"
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/Unauthorized"
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalError"
+
+boards-id:
+  get:
+    tags: [Board]
+    summary: Get board snapshot
+    operationId: getBoard
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: boardId
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/boards.yaml#/OkBoardSnapshotResponse"
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/Unauthorized"
+      "404":
+        description: Board not found
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/NotFound"
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalError"
+
+boards-create:
+  post:
+    tags: [Board]
+    summary: Create board
+    operationId: createBoard
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/boards.yaml#/CreateBoardRequest"
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/boards.yaml#/OkBoardResponse"
+      "400":
+        description: Bad request (validation)
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/BadRequest"
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/Unauthorized"
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalError"
+
+boards-delete:
+  post:
+    tags: [Board]
+    summary: Delete board (only owner)
+    operationId: deleteBoard
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/boards.yaml#/DeleteBoardRequest"
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/boards.yaml#/OkDeleteBoardResponse"
+      "400":
+        description: Bad request (validation)
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/BadRequest"
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/Unauthorized"
+      "403":
+        description: Forbidden
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/Forbidden"
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalError"
+
+boards-update:
+  post:
+    tags: [Board]
+    summary: Update board title (only owner)
+    operationId: updateBoard
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/boards.yaml#/UpdateBoardRequest"
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/boards.yaml#/OkBoardResponse"
+      "400":
+        description: Bad request (validation)
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/BadRequest"
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/Unauthorized"
+      "403":
+        description: Forbidden
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/Forbidden"
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalError"
+
+boards-join:
+  post:
+    tags: [Board]
+    summary: Join board by invite token
+    operationId: joinBoard
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/boards.yaml#/JoinBoardRequest"
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/boards.yaml#/OkJoinBoardResponse"
+      "400":
+        description: Bad request (validation)
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/BadRequest"
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/Unauthorized"
+      "403":
+        description: Forbidden (invalid/expired token)
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/Forbidden"
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalError"

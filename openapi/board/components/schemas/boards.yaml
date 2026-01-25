@@ -1,0 +1,187 @@
+CreateBoardRequest:
+  type: object
+  required: [title]
+  properties:
+    title:
+      type: string
+      minLength: 1
+      maxLength: 200
+
+UpdateBoardRequest:
+  type: object
+  required: [id, title]
+  properties:
+    id:
+      type: string
+      minLength: 1
+    title:
+      type: string
+      minLength: 1
+      maxLength: 200
+
+DeleteBoardRequest:
+  type: object
+  required: [id]
+  properties:
+    id:
+      type: string
+      minLength: 1
+
+JoinBoardRequest:
+  type: object
+  required: [token]
+  properties:
+    token:
+      type: string
+      minLength: 1
+      example: a1B2c3D4e5F6
+
+Board:
+  type: object
+  required: [id, title, seq, ownerUserId, createdAt]
+  properties:
+    id:
+      type: string
+    title:
+      type: string
+    seq:
+      type: integer
+      format: int32
+    ownerUserId:
+      type: string
+    createdAt:
+      type: string
+      format: date-time
+
+Like:
+  type: object
+  required: [userLogin]
+  properties:
+    userLogin:
+      type: string
+
+Card:
+  type: object
+  required: [id, text, userLogin, position, likes]
+  properties:
+    id:
+      type: string
+    text:
+      type: string
+    userLogin:
+      type: string
+    position:
+      type: number
+    likes:
+      type: array
+      items:
+        $ref: "#/Like"
+
+Column:
+  type: object
+  required: [id, position, title, cards]
+  properties:
+    id:
+      type: string
+    position:
+      type: number
+    title:
+      type: string
+    cards:
+      type: array
+      items:
+        $ref: "#/Card"
+
+Invite:
+  type: object
+  required: [type, expiresAt, token]
+  properties:
+    type:
+      $ref: "./common.yaml#/InviteType"
+    expiresAt:
+      type: string
+      format: date-time
+      nullable: true
+    token:
+      type: string
+      minLength: 12
+      maxLength: 12
+      pattern: "^[0-9A-Za-z]{12}$"
+
+BoardSnapshot:
+  type: object
+  required: [id, title, seq, ownerUserId, createdAt, invites, columns]
+  properties:
+    id:
+      type: string
+    title:
+      type: string
+    seq:
+      type: integer
+      format: int32
+    ownerUserId:
+      type: string
+    createdAt:
+      type: string
+      format: date-time
+    invites:
+      type: array
+      items:
+        $ref: "#/Invite"
+    columns:
+      type: array
+      items:
+        $ref: "#/Column"
+
+JoinBoardResponse:
+  type: object
+  required: [boardId]
+  properties:
+    boardId:
+      type: string
+
+OkBoardsResponse:
+  allOf:
+    - $ref: "./common.yaml#/OkResponseBase"
+    - type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/Board"
+
+OkBoardResponse:
+  allOf:
+    - $ref: "./common.yaml#/OkResponseBase"
+    - type: object
+      properties:
+        data:
+          $ref: "#/Board"
+
+OkBoardSnapshotResponse:
+  allOf:
+    - $ref: "./common.yaml#/OkResponseBase"
+    - type: object
+      properties:
+        data:
+          $ref: "#/BoardSnapshot"
+
+OkJoinBoardResponse:
+  allOf:
+    - $ref: "./common.yaml#/OkResponseBase"
+    - type: object
+      properties:
+        data:
+          $ref: "#/JoinBoardResponse"
+
+OkDeleteBoardResponse:
+  allOf:
+    - $ref: "./common.yaml#/OkResponseBase"
+    - type: object
+      properties:
+        data:
+          type: object
+          required: [id]
+          properties:
+            id:
+              type: string

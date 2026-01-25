@@ -1,0 +1,46 @@
+StatusEnum:
+  type: string
+  enum: [ok, error]
+
+InviteType:
+  type: string
+  enum: [temporary, permanent]
+
+OkResponseBase:
+  type: object
+  required: [status, data]
+  properties:
+    status:
+      $ref: "#/StatusEnum"
+    data: {}
+
+ErrorResponse:
+  type: object
+  required: [status, message, code]
+  properties:
+    status:
+      $ref: "#/StatusEnum"
+    message:
+      type: string
+    code:
+      type: string
+
+Forbidden:
+  allOf:
+    - $ref: "#/ErrorResponse"
+
+NotFound:
+  allOf:
+    - $ref: "#/ErrorResponse"
+
+BadRequest:
+  allOf:
+    - $ref: "#/ErrorResponse"
+
+Unauthorized:
+  allOf:
+    - $ref: "#/ErrorResponse"
+
+InternalError:
+  allOf:
+    - $ref: "#/ErrorResponse"

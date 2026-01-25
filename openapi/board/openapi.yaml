@@ -1,0 +1,84 @@
+openapi: 3.0.3
+info:
+  title: Boards API
+  version: 0.0.1
+servers:
+  - url: /
+tags:
+  - name: Board
+    description: Boards endpoints
+
+paths:
+  /v1/boards:
+    $ref: "./paths/boards.yaml#/boards"
+  /v1/boards/{boardId}:
+    $ref: "./paths/boards.yaml#/boards-id"
+  /v1/boards/create:
+    $ref: "./paths/boards.yaml#/boards-create"
+  /v1/boards/delete:
+    $ref: "./paths/boards.yaml#/boards-delete"
+  /v1/boards/update:
+    $ref: "./paths/boards.yaml#/boards-update"
+  /v1/boards/join:
+    $ref: "./paths/boards.yaml#/boards-join"
+
+components:
+  securitySchemes:
+    $ref: "./components/security.yaml"
+
+  schemas:
+    # common
+    StatusEnum:
+      $ref: "./components/schemas/common.yaml#/StatusEnum"
+    OkResponseBase:
+      $ref: "./components/schemas/common.yaml#/OkResponseBase"
+    ErrorResponse:
+      $ref: "./components/schemas/common.yaml#/ErrorResponse"
+    Forbidden:
+      $ref: "./components/schemas/common.yaml#/Forbidden"
+    NotFound:
+      $ref: "./components/schemas/common.yaml#/NotFound"
+    BadRequest:
+      $ref: "./components/schemas/common.yaml#/BadRequest"
+    Unauthorized:
+      $ref: "./components/schemas/common.yaml#/Unauthorized"
+    InternalError:
+      $ref: "./components/schemas/common.yaml#/InternalError"
+    InviteType:
+      $ref: "./components/schemas/common.yaml#/InviteType"
+
+    # boards
+    CreateBoardRequest:
+      $ref: "./components/schemas/boards.yaml#/CreateBoardRequest"
+    UpdateBoardRequest:
+      $ref: "./components/schemas/boards.yaml#/UpdateBoardRequest"
+    DeleteBoardRequest:
+      $ref: "./components/schemas/boards.yaml#/DeleteBoardRequest"
+    JoinBoardRequest:
+      $ref: "./components/schemas/boards.yaml#/JoinBoardRequest"
+
+    Board:
+      $ref: "./components/schemas/boards.yaml#/Board"
+    Invite:
+      $ref: "./components/schemas/boards.yaml#/Invite"
+    Like:
+      $ref: "./components/schemas/boards.yaml#/Like"
+    Card:
+      $ref: "./components/schemas/boards.yaml#/Card"
+    Column:
+      $ref: "./components/schemas/boards.yaml#/Column"
+    BoardSnapshot:
+      $ref: "./components/schemas/boards.yaml#/BoardSnapshot"
+    JoinBoardResponse:
+      $ref: "./components/schemas/boards.yaml#/JoinBoardResponse"
+
+    OkBoardsResponse:
+      $ref: "./components/schemas/boards.yaml#/OkBoardsResponse"
+    OkBoardResponse:
+      $ref: "./components/schemas/boards.yaml#/OkBoardResponse"
+    OkBoardSnapshotResponse:
+      $ref: "./components/schemas/boards.yaml#/OkBoardSnapshotResponse"
+    OkJoinBoardResponse:
+      $ref: "./components/schemas/boards.yaml#/OkJoinBoardResponse"
+    OkDeleteBoardResponse:
+      $ref: "./components/schemas/boards.yaml#/OkDeleteBoardResponse"
