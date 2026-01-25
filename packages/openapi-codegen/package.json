@@ -13,6 +13,7 @@
   "devDependencies": {
     "@retro-flow/eslint-config": "workspace:*",
     "@retro-flow/prettier-config": "workspace:*",
+    "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
