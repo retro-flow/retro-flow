@@ -1,4 +1,4 @@
-bearerAuth:
+security_root:
   type: http
   scheme: bearer
   bearerFormat: JWT

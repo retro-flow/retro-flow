@@ -24,7 +24,8 @@ paths:
 
 components:
   securitySchemes:
-    $ref: "./components/security.yaml"
+    security_root:
+      $ref: "./components/security.yaml#/security_root"
 
   schemas:
     # common
