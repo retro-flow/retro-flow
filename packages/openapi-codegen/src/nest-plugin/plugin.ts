@@ -23,7 +23,7 @@ export const handler: NestPlugin['Handler'] = async (params) => {
           value: { type: 'literal', value: operation.path },
         },
       ],
-      params: [],
+      arguments: [],
       result: { type: 'unknown' },
     }
 
@@ -39,7 +39,7 @@ export const handler: NestPlugin['Handler'] = async (params) => {
           value: { type: 'identifier', value: createSchemeNamespace(body.name) },
         })
 
-        handler.params.push({
+        handler.arguments.push({
           name: 'body',
           decorator: { name: 'n.Body' },
           type: `v.InferOutput<typeof ${createSchemeNamespace(body.name)}>`,
@@ -59,11 +59,6 @@ export const handler: NestPlugin['Handler'] = async (params) => {
         })
 
         if (response.node) {
-          handler.decorators.push({
-            name: 'i.ValibotResponse',
-            value: { type: 'identifier', value: createSchemeNamespace(response.name) },
-          })
-
           handler.result = {
             type: `v.InferOutput<typeof ${createSchemeNamespace(response.name)}>`,
           }
@@ -86,7 +81,7 @@ export const handler: NestPlugin['Handler'] = async (params) => {
   const barrel = ['export * from "./controller"']
 
   for (const [name, handlers] of controllers) {
-    result.push(createController(toPascalCase(`${name}Controller`), handlers))
+    result.push(createController(toPascalCase(`${name}ControllerImpl`), handlers))
   }
 
   emitFile(plugin, './index', barrel.join('\n'))
@@ -103,8 +98,8 @@ interface Decorator {
   }
 }
 
-interface Param {
-  decorator: Decorator
+interface FunctionArgument {
+  decorator?: Decorator
   name: string
   type: string
 }
@@ -116,7 +111,7 @@ interface HandlerResult {
 interface Handler {
   name: string
   decorators: Decorator[]
-  params: Param[]
+  arguments: FunctionArgument[]
   result: HandlerResult
 }
 
@@ -181,15 +176,23 @@ function createDecorator(decorator: Decorator) {
   return `@${decorator.name}(${param})`
 }
 
-function createHandlerParam(param: Param) {
-  return `${createDecorator(param.decorator)} ${param.name}: ${param.type}`
+function createHandlerParam(param: FunctionArgument) {
+  if (param.decorator) {
+    return `${createDecorator(param.decorator)} ${param.name}: ${param.type}`
+  }
+
+  return `${param.name}: ${param.type}`
 }
 
 function createHandler(handler: Handler) {
   return `
     ${handler.decorators.map((decorator) => createDecorator(decorator)).join('\n')}
-    async ${handler.name}(${handler.params.map((param) => createHandlerParam(param)).join(', ')}): Promise<${handler.result.type}> {
-      throw new Error()
+    private async _${handler.name}(${handler.arguments.map((param) => createHandlerParam(param)).join(', ')}): Promise<${handler.result.type}> {
+      return this.${handler.name}(${handler.arguments.map((param) => param.name)})
+    }
+
+    async ${handler.name}(${handler.arguments.map((param) => createHandlerParam({ ...param, decorator: undefined })).join(', ')}): Promise<${handler.result.type}> {
+      throw new Error('Not implemented')
     }
   `
 }
