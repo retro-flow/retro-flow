@@ -1,11 +1,13 @@
 import { $ } from '@hey-api/openapi-ts'
 
+import * as c from './compiler'
 import type { NestPlugin } from './types'
 
 export const handler: NestPlugin['Handler'] = async (params) => {
   const { plugin } = params
 
   const controllers = new Map<string, Handler[]>()
+  const factories = new Map<string, ResponseFactory>()
 
   plugin.forEach('operation', (event) => {
     const operation = event.operation
@@ -59,8 +61,20 @@ export const handler: NestPlugin['Handler'] = async (params) => {
         })
 
         if (response.node) {
+          const schema = createSchemeNamespace(response.name)
+          const name =
+            String(response.meta?.path?.at(-1) ?? '')
+              .split('_')
+              .at(-1) ?? ''
+
+          factories.set(name, {
+            name,
+            schema,
+            type: `v.InferInput<typeof ${schema}>`,
+          })
+
           handler.result = {
-            type: `v.InferOutput<typeof ${createSchemeNamespace(response.name)}>`,
+            type: `v.InferOutput<typeof ${schema}>`,
           }
         }
       }
@@ -78,13 +92,20 @@ export const handler: NestPlugin['Handler'] = async (params) => {
     createNamespaceImport('s', './scheme'),
   ]
 
-  const barrel = ['export * from "./controller"']
+  const barrel = ['export * from "./controller"', 'export * as r from "./responses"']
+
+  const responses = [createNamespaceImport('v', 'valibot'), createNamespaceImport('s', './scheme')]
+
+  for (const [_, factory] of factories) {
+    responses.push(c.createValidationFactory(factory.name, factory.type, factory.schema))
+  }
 
   for (const [name, handlers] of controllers) {
     result.push(createController(toPascalCase(`${name}ControllerImpl`), handlers))
   }
 
   emitFile(plugin, './index', barrel.join('\n'))
+  emitFile(plugin, './responses', responses.join('\n'))
   emitFile(plugin, './controller', result.join('\n'))
 }
 
@@ -106,6 +127,12 @@ interface FunctionArgument {
 
 interface HandlerResult {
   type: string
+}
+
+interface ResponseFactory {
+  name: string
+  type: string
+  schema: string
 }
 
 interface Handler {
