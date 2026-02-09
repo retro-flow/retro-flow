@@ -1,40 +1,55 @@
-import type { UserConfig } from '@hey-api/openapi-ts'
+import path from 'node:path'
 
-import { nestPlugin } from './nest-plugin'
+import { program } from 'commander'
+import { create as createMemFs } from 'mem-fs'
+import { create as createEditor } from 'mem-fs-editor'
+import type { OpenAPIV3 } from 'openapi-types'
+import SwaggerParser from '@apidevtools/swagger-parser'
 
-export function defineConfig(config: UserConfig & { output?: string }) {
-  return {
-    input: config.input,
-    output: {
-      path: config.output ?? './scheme',
-      fileName: {
-        suffix: null,
-        name: (name) => (name === 'valibot' ? 'scheme' : name),
+import { handler as nestHandler } from './nest-generator'
+import type { HandlerContext, Reference } from './types'
+import { handler as valibotHandler } from './valibot-generator'
+
+async function main() {
+  program
+    // CLI
+    .option('-s, --schema <string>')
+    .option('-o, --output <string>')
+    .parse()
+
+  const options = program.opts<{ schema: string; output: string }>()
+
+  const document = (await SwaggerParser.bundle(path.resolve(options.schema))) as OpenAPIV3.Document
+
+  const store = createMemFs()
+  const fs = createEditor(store)
+
+  const references = new Map<string, Map<string, Reference>>()
+
+  const context = {
+    fs,
+    document,
+    config: {
+      output: {
+        path: options.output,
       },
-      postProcess: ['prettier'],
     },
-    plugins: [
-      nestPlugin(),
-      {
-        name: 'valibot',
-        definitions: { name: '{{name}}' },
-        responses: { enabled: false },
-        requests: { enabled: false },
-        '~resolvers': {
-          string(context) {
-            const { $, schema, symbols } = context
-
-            if (schema.format === 'date-time') {
-              context.nodes.base = () => {
-                return $(symbols.v).attr('date').call()
-              }
-              context.nodes.format = () => {
-                return $(symbols.v).attr('transform').call('(value) => value.toISOString()')
-              }
-            }
-          },
-        },
+    references,
+    generators: {
+      valibot: {
+        schemaSuffix: 'Schema',
+        requestSchemaSuffix: 'RequestSchema',
       },
-    ],
-  } as UserConfig
+      nest: {
+        requestInterfaceSuffix: 'Request',
+      },
+    },
+  } satisfies HandlerContext
+
+  await valibotHandler(context)
+  await nestHandler(context)
+
+  await fs.commit()
 }
+
+main()
