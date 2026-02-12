@@ -11,7 +11,7 @@ boards:
         content:
           application/json:
             schema:
-              $ref: "../components/schemas/boards.yaml#/OkBoardsResponse"
+              $ref: "../components/schemas/boards.yaml#/BoardsResponse"
       "401":
         description: Unauthorized
         content:
@@ -44,7 +44,7 @@ boards-id:
         content:
           application/json:
             schema:
-              $ref: "../components/schemas/boards.yaml#/OkBoardSnapshotResponse"
+              $ref: "../components/schemas/boards.yaml#/BoardResponse"
       "401":
         description: Unauthorized
         content:
@@ -76,14 +76,14 @@ boards-create:
       content:
         application/json:
           schema:
-            $ref: "../components/schemas/boards.yaml#/CreateBoardRequest"
+            $ref: "../components/schemas/boards.yaml#/CreateBoardBody"
     responses:
       "200":
         description: OK
         content:
           application/json:
             schema:
-              $ref: "../components/schemas/boards.yaml#/OkBoardResponse"
+              $ref: "../components/schemas/boards.yaml#/CreateBoardResponse"
       "400":
         description: Bad request (validation)
         content:
@@ -115,14 +115,14 @@ boards-delete:
       content:
         application/json:
           schema:
-            $ref: "../components/schemas/boards.yaml#/DeleteBoardRequest"
+            $ref: "../components/schemas/boards.yaml#/DeleteBoardBody"
     responses:
       "200":
         description: OK
         content:
           application/json:
             schema:
-              $ref: "../components/schemas/boards.yaml#/OkDeleteBoardResponse"
+              $ref: "../components/schemas/boards.yaml#/DeleteBoardResponse"
       "400":
         description: Bad request (validation)
         content:
@@ -160,14 +160,14 @@ boards-update:
       content:
         application/json:
           schema:
-            $ref: "../components/schemas/boards.yaml#/UpdateBoardRequest"
+            $ref: "../components/schemas/boards.yaml#/UpdateBoardBody"
     responses:
       "200":
         description: OK
         content:
           application/json:
             schema:
-              $ref: "../components/schemas/boards.yaml#/OkBoardResponse"
+              $ref: "../components/schemas/boards.yaml#/UpdateBoardResponse"
       "400":
         description: Bad request (validation)
         content:
@@ -205,14 +205,14 @@ boards-join:
       content:
         application/json:
           schema:
-            $ref: "../components/schemas/boards.yaml#/JoinBoardRequest"
+            $ref: "../components/schemas/boards.yaml#/JoinBoardBody"
     responses:
       "200":
         description: OK
         content:
           application/json:
             schema:
-              $ref: "../components/schemas/boards.yaml#/OkJoinBoardResponse"
+              $ref: "../components/schemas/boards.yaml#/JoinBoardResponse"
       "400":
         description: Bad request (validation)
         content:

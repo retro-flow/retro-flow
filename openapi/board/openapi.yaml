@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
   title: Boards API
   version: 0.0.1
@@ -49,14 +49,14 @@ components:
       $ref: "./components/schemas/common.yaml#/InviteType"
 
     # boards
-    CreateBoardRequest:
-      $ref: "./components/schemas/boards.yaml#/CreateBoardRequest"
-    UpdateBoardRequest:
-      $ref: "./components/schemas/boards.yaml#/UpdateBoardRequest"
-    DeleteBoardRequest:
-      $ref: "./components/schemas/boards.yaml#/DeleteBoardRequest"
-    JoinBoardRequest:
-      $ref: "./components/schemas/boards.yaml#/JoinBoardRequest"
+    CreateBoardBody:
+      $ref: "./components/schemas/boards.yaml#/CreateBoardBody"
+    UpdateBoardBody:
+      $ref: "./components/schemas/boards.yaml#/UpdateBoardBody"
+    DeleteBoardBody:
+      $ref: "./components/schemas/boards.yaml#/DeleteBoardBody"
+    JoinBoardBody:
+      $ref: "./components/schemas/boards.yaml#/JoinBoardBody"
 
     Board:
       $ref: "./components/schemas/boards.yaml#/Board"
@@ -70,16 +70,16 @@ components:
       $ref: "./components/schemas/boards.yaml#/Column"
     BoardSnapshot:
       $ref: "./components/schemas/boards.yaml#/BoardSnapshot"
+
+    BoardResponse:
+      $ref: "./components/schemas/boards.yaml#/BoardResponse"
+    BoardsResponse:
+      $ref: "./components/schemas/boards.yaml#/BoardsResponse"
+    CreateBoardResponse:
+      $ref: "./components/schemas/boards.yaml#/CreateBoardResponse"
+    DeleteBoardResponse:
+      $ref: "./components/schemas/boards.yaml#/DeleteBoardResponse"
     JoinBoardResponse:
       $ref: "./components/schemas/boards.yaml#/JoinBoardResponse"
-
-    OkBoardsResponse:
-      $ref: "./components/schemas/boards.yaml#/OkBoardsResponse"
-    OkBoardResponse:
-      $ref: "./components/schemas/boards.yaml#/OkBoardResponse"
-    OkBoardSnapshotResponse:
-      $ref: "./components/schemas/boards.yaml#/OkBoardSnapshotResponse"
-    OkJoinBoardResponse:
-      $ref: "./components/schemas/boards.yaml#/OkJoinBoardResponse"
-    OkDeleteBoardResponse:
-      $ref: "./components/schemas/boards.yaml#/OkDeleteBoardResponse"
+    UpdateBoardResponse:
+      $ref: "./components/schemas/boards.yaml#/UpdateBoardResponse"

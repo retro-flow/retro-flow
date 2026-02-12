@@ -4,22 +4,21 @@ StatusEnum:
 
 InviteType:
   type: string
-  enum: [temporary, permanent]
+  enum: [TEMPORARY, PERMANENT]
 
 OkResponseBase:
   type: object
-  required: [status, data]
+  required: [status]
   properties:
     status:
-      $ref: "#/StatusEnum"
-    data: {}
+      const: ok
 
 ErrorResponse:
   type: object
   required: [status, message, code]
   properties:
     status:
-      $ref: "#/StatusEnum"
+      const: error
     message:
       type: string
     code:

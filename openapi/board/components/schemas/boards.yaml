@@ -1,4 +1,4 @@
-CreateBoardRequest:
+CreateBoardBody:
   type: object
   required: [title]
   properties:
@@ -7,7 +7,7 @@ CreateBoardRequest:
       minLength: 1
       maxLength: 200
 
-UpdateBoardRequest:
+UpdateBoardBody:
   type: object
   required: [id, title]
   properties:
@@ -19,7 +19,7 @@ UpdateBoardRequest:
       minLength: 1
       maxLength: 200
 
-DeleteBoardRequest:
+DeleteBoardBody:
   type: object
   required: [id]
   properties:
@@ -27,7 +27,7 @@ DeleteBoardRequest:
       type: string
       minLength: 1
 
-JoinBoardRequest:
+JoinBoardBody:
   type: object
   required: [token]
   properties:
@@ -38,15 +38,12 @@ JoinBoardRequest:
 
 Board:
   type: object
-  required: [id, title, seq, ownerUserId, createdAt]
+  required: [id, title, ownerUserId, createdAt]
   properties:
     id:
       type: string
     title:
       type: string
-    seq:
-      type: integer
-      format: int32
     ownerUserId:
       type: string
     createdAt:
@@ -72,6 +69,7 @@ Card:
       type: string
     position:
       type: number
+      format: decimal
     likes:
       type: array
       items:
@@ -85,6 +83,7 @@ Column:
       type: string
     position:
       type: number
+      format: decimal
     title:
       type: string
     cards:
@@ -110,15 +109,12 @@ Invite:
 
 BoardSnapshot:
   type: object
-  required: [id, title, seq, ownerUserId, createdAt, invites, columns]
+  required: [id, title, ownerUserId, createdAt, invites, columns]
   properties:
     id:
       type: string
     title:
       type: string
-    seq:
-      type: integer
-      format: int32
     ownerUserId:
       type: string
     createdAt:
@@ -134,50 +130,60 @@ BoardSnapshot:
         $ref: "#/Column"
 
 JoinBoardResponse:
-  type: object
-  required: [boardId]
-  properties:
-    boardId:
-      type: string
-
-OkBoardsResponse:
   allOf:
     - $ref: "./common.yaml#/OkResponseBase"
     - type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [boardId]
+          boardId:
+            type: string
+
+BoardsResponse:
+  allOf:
+    - $ref: "./common.yaml#/OkResponseBase"
+    - type: object
+      required: [data]
       properties:
         data:
           type: array
           items:
             $ref: "#/Board"
 
-OkBoardResponse:
+BoardResponse:
   allOf:
     - $ref: "./common.yaml#/OkResponseBase"
     - type: object
-      properties:
-        data:
-          $ref: "#/Board"
-
-OkBoardSnapshotResponse:
-  allOf:
-    - $ref: "./common.yaml#/OkResponseBase"
-    - type: object
+      required: [data]
       properties:
         data:
           $ref: "#/BoardSnapshot"
 
-OkJoinBoardResponse:
+CreateBoardResponse:
   allOf:
     - $ref: "./common.yaml#/OkResponseBase"
     - type: object
+      required: [data]
       properties:
         data:
-          $ref: "#/JoinBoardResponse"
+          $ref: "#/Board"
 
-OkDeleteBoardResponse:
+UpdateBoardResponse:
   allOf:
     - $ref: "./common.yaml#/OkResponseBase"
     - type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/Board"
+
+DeleteBoardResponse:
+  allOf:
+    - $ref: "./common.yaml#/OkResponseBase"
+    - type: object
+      required: [data]
       properties:
         data:
           type: object
