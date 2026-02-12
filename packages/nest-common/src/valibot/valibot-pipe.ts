@@ -1,7 +1,7 @@
 import * as v from 'valibot'
-import { applyDecorators, BadRequestException, UsePipes, type PipeTransform } from '@nestjs/common'
+import { BadRequestException, type PipeTransform } from '@nestjs/common'
 
-class ValibotPipe implements PipeTransform {
+export class ValibotPipe implements PipeTransform {
   constructor(private schema: v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>) {}
 
   transform(value: unknown) {
@@ -12,8 +12,4 @@ class ValibotPipe implements PipeTransform {
       throw new BadRequestException(error)
     }
   }
-}
-
-export function ValibotRequest(schema: v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>) {
-  return applyDecorators(UsePipes(new ValibotPipe(schema)))
 }

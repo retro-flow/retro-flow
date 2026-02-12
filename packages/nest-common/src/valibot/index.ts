@@ -1,2 +1,1 @@
-export { ValibotRequest } from './valibot-pipe'
-export { ValibotResponse } from './valibot-response-interceptor'
+export { ValibotPipe } from './valibot-pipe'
