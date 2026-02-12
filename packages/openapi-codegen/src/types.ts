@@ -26,6 +26,7 @@ export interface Generators {
   valibot: {
     schemaSuffix: string
     requestSchemaSuffix: string
+    requestInterfaceSuffix: string
     resolvers?: {
       string?: (context: ResolverContext) => string
       number?: (context: ResolverContext) => string

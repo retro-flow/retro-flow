@@ -6,10 +6,8 @@ import { getComponentNameFromRef, toPascalCase } from './utils'
 
 export async function handler(context: HandlerContext) {
   const controllers = collectControllersByTag(context.document)
-  const barrelFile = await format(renderBarrelFile())
   const controllersFile = await format(renderControllersFile(context, controllers))
 
-  context.fs.write(path.resolve(context.config.output.path, 'index.ts'), barrelFile)
   context.fs.write(path.resolve(context.config.output.path, 'controllers.ts'), controllersFile)
 }
 
@@ -58,14 +56,6 @@ function collectControllersByTag(document: Document) {
   return new Map([...result.entries()].sort((a, b) => a[0].localeCompare(b[0])))
 }
 
-function renderBarrelFile() {
-  const lines = []
-
-  lines.push('export * from "./controllers"')
-
-  return lines.join('\n')
-}
-
 function renderControllersFile(
   context: HandlerContext,
   controllers: Map<string, ControllerOperation[]>,
@@ -103,20 +93,17 @@ function renderControllersFile(
       const privateMethodName = `${operation.id}Handler`
       const publicMethodName = operation.id
       const interfaceName = toPascalCase(
-        `${operation.id}${context.generators.nest.requestInterfaceSuffix}`,
+        `${operation.id}${context.generators.valibot.requestInterfaceSuffix}`,
       )
 
       const privateParams = []
       const forwardedParams = []
-      const types = []
 
       if (isParamsExists) {
         nestImports.add('Param')
 
-        types.push(`params: v.InferOutput<typeof schema.${reference.name}.entries.params>`)
-
         privateParams.push(
-          `@Param(new ValibotPipe(schema.${reference.name}.entries.params)) params: ${interfaceName}['params']`,
+          `@Param(new ValibotPipe(schema.${reference.name}.entries.params)) params: schema.${interfaceName}['params']`,
         )
 
         forwardedParams.push('params')
@@ -125,10 +112,8 @@ function renderControllersFile(
       if (isQueryExists) {
         nestImports.add('Query')
 
-        types.push(`query: v.InferOutput<typeof schema.${reference.name}.entries.query>`)
-
         privateParams.push(
-          `@Query(new ValibotPipe(schema.${reference.name}.entries.query)) query: ${interfaceName}['query']`,
+          `@Query(new ValibotPipe(schema.${reference.name}.entries.query)) query: schema.${interfaceName}['query']`,
         )
 
         forwardedParams.push('query')
@@ -137,21 +122,11 @@ function renderControllersFile(
       if (isBodyExists) {
         nestImports.add('Body')
 
-        types.push(`body: v.InferOutput<typeof schema.${reference.name}.entries.body>`)
-
         privateParams.push(
-          `@Body(new ValibotPipe(schema.${reference.name}.entries.body)) body: ${interfaceName}['body']`,
+          `@Body(new ValibotPipe(schema.${reference.name}.entries.body)) body: schema.${interfaceName}['body']`,
         )
 
         forwardedParams.push('body')
-      }
-
-      if (types.length > 0) {
-        lines.push(`
-          export interface ${interfaceName} {
-            ${types.join('\n')}
-          }
-        `)
       }
 
       methods.push(`
@@ -166,7 +141,7 @@ function renderControllersFile(
       `)
 
       methods.push(`
-        async ${publicMethodName} (${forwardedParams.length > 0 ? `data: ${interfaceName}` : ''}): Promise<${responseType}> {
+        async ${publicMethodName} (${forwardedParams.length > 0 ? `data: schema.${interfaceName}` : ''}): Promise<${responseType}> {
           throw new Error('Not implemented')
         }
       `)

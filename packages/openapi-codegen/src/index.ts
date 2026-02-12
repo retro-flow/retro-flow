@@ -6,6 +6,7 @@ import { create as createEditor } from 'mem-fs-editor'
 import type { OpenAPIV3 } from 'openapi-types'
 import SwaggerParser from '@apidevtools/swagger-parser'
 
+import { handler as barrelHandler } from './barrel-generator'
 import { handler as nestHandler } from './nest-generator'
 import type { HandlerContext, Reference } from './types'
 import { handler as valibotHandler } from './valibot-generator'
@@ -39,6 +40,7 @@ async function main() {
       valibot: {
         schemaSuffix: 'Schema',
         requestSchemaSuffix: 'RequestSchema',
+        requestInterfaceSuffix: 'Request',
       },
       nest: {
         requestInterfaceSuffix: 'Request',
@@ -48,6 +50,7 @@ async function main() {
 
   await valibotHandler(context)
   await nestHandler(context)
+  await barrelHandler(context)
 
   await fs.commit()
 }

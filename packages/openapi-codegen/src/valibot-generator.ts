@@ -46,6 +46,7 @@ function renderComponentsSchemas(context: HandlerContext) {
     context.references.get('valibot')?.set(name, { name: schemaName })
 
     lines.push(`export const ${schemaName} = ${expression}`)
+    lines.push(`export type ${name} = v.InferInput<typeof ${schemaName}>`)
   }
 
   return lines.join('\n')
@@ -66,22 +67,35 @@ function renderRequestsSchemas(context: HandlerContext) {
         continue
       }
 
-      const name = toPascalCase(
-        operation.operationId + context.generators.valibot.requestSchemaSuffix,
+      const operationId = toPascalCase(operation.operationId)
+      const schemaName = toPascalCase(
+        `${operationId}${context.generators.valibot.requestSchemaSuffix}`,
+      )
+      const interfaceName = toPascalCase(
+        `${operationId}${context.generators.valibot.requestInterfaceSuffix}`,
       )
       const body = createBodySchemaExpression(context, operation)
       const params = createParamsSchemaExpression(context, operation)
       const query = createQuerySchemaExpression(context, operation)
 
-      context.references.get('valibot')?.set(operation.operationId, { name })
+      context.references.get('valibot')?.set(operation.operationId, { name: schemaName })
+
+      const properties = []
+
+      if (body !== null) {
+        properties.push(`body: ${body}`)
+      }
+      if (params !== null) {
+        properties.push(`params: ${params}`)
+      }
+      if (query !== null) {
+        properties.push(`query: ${query}`)
+      }
 
       lines.push(`
-        export const ${name} = v.object({
-          params: ${params},
-          query: ${query},
-          body: ${body},
-        })
+        export const ${schemaName} = v.object({ ${properties.join(',')}})
       `)
+      lines.push(`export type ${interfaceName} = v.InferOutput<typeof ${schemaName}>`)
     }
   }
 
@@ -265,15 +279,15 @@ function getExportSchemaName(context: HandlerContext, name: string) {
 }
 
 function createQuerySchemaExpression(_context: HandlerContext, _operation: Operation) {
-  return 'v.never()'
+  return null
 }
 
 function createParamsSchemaExpression(context: HandlerContext, operation: Operation) {
   if (!operation.parameters) {
-    return 'v.never()'
+    return null
   }
   if ('$ref' in operation.parameters) {
-    return 'v.never()'
+    return null
   }
 
   const entries = []
@@ -296,17 +310,17 @@ function createParamsSchemaExpression(context: HandlerContext, operation: Operat
 
 function createBodySchemaExpression(context: HandlerContext, operation: Operation) {
   if (!operation.requestBody) {
-    return 'v.never()'
+    return null
   }
   if ('$ref' in operation.requestBody) {
-    return 'v.never()'
+    return null
   }
 
   const isRequired = operation.requestBody.required
   const content = operation.requestBody.content['application/json']
 
   if (!content?.schema) {
-    return 'v.never()'
+    return null
   }
 
   const schema = createValibotSchema(context, content.schema)
