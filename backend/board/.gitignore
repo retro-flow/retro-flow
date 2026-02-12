@@ -3,6 +3,7 @@
 /node_modules
 /build
 /src/prisma
+/src/schema
 
 # Logs
 logs

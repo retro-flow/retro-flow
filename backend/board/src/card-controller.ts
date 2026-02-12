@@ -12,7 +12,7 @@ import {
   Like,
   OkResponse,
   UpdateCardRequest,
-} from '@app/schema'
+} from '@app/schema-legacy'
 
 @Controller()
 export class CardController {

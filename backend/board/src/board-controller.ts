@@ -1,34 +1,27 @@
 import { customAlphabet } from 'nanoid'
-import { Body, Controller, Get, Param, Post } from '@nestjs/common'
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common'
 
 import { AuthService } from '@app/auth-service'
-import { ForbiddenException, NotFoundException } from '@app/exceptions'
-import { mapInviteType } from '@app/mapper'
+import { NotFoundException } from '@app/exceptions'
 import { PrismaService } from '@app/prisma-service'
 import { InviteType } from '@app/prisma/enums'
 import {
-  Board,
-  BoardSnapshot,
-  Card,
-  Column,
-  CreateBoardRequest,
-  DeleteBoardRequest,
-  Invite,
-  JoinBoardRequest,
-  JoinBoardResponse,
-  Like,
-  OkResponse,
-  UpdateBoardRequest,
+  BoardControllerImpl,
+  type CreateBoardRequest,
+  type DeleteBoardRequest,
+  type GetBoardRequest,
+  type JoinBoardRequest,
+  type UpdateBoardRequest,
 } from '@app/schema'
 
-@Controller()
-export class AppController {
-  constructor(
-    private auth: AuthService,
-    private prisma: PrismaService,
-  ) {}
+@Injectable()
+export class BoardController extends BoardControllerImpl {
+  @Inject(AuthService)
+  auth: AuthService
 
-  @Get('/v1/boards')
+  @Inject(PrismaService)
+  prisma: PrismaService
+
   async getBoards() {
     const user = await this.auth.getCurrentUser()
     const boards = await this.prisma.board.findMany({
@@ -36,14 +29,13 @@ export class AppController {
       orderBy: { createdAt: 'desc' },
     })
 
-    return new OkResponse(boards.map((board) => new Board(board)))
+    return this.BoardsResponse({ status: 'ok', data: boards })
   }
 
-  @Get('/v1/boards/:boardId')
-  async getBoard(@Param('boardId') boardId: string) {
+  async getBoard(data: GetBoardRequest) {
     const board = await this.prisma.board.findUnique({
       where: {
-        id: boardId,
+        id: data.params.boardId,
       },
       include: {
         invites: {
@@ -85,41 +77,15 @@ export class AppController {
       throw new NotFoundException({ message: 'Board not found' })
     }
 
-    return new OkResponse(
-      new BoardSnapshot({
-        ...board,
-        invites: board.invites.map((invite) => {
-          return new Invite({
-            ...invite,
-            type: mapInviteType(invite.type),
-          })
-        }),
-        columns: board.columns.map((column) => {
-          return new Column({
-            ...column,
-            position: column.position.toNumber(),
-            cards: column.cards.map((card) => {
-              return new Card({
-                ...card,
-                position: card.position.toNumber(),
-                likes: card.likes.map((like) => {
-                  return new Like(like)
-                }),
-              })
-            }),
-          })
-        }),
-      }),
-    )
+    return this.BoardResponse({ status: 'ok', data: board })
   }
 
-  @Post('/v1/boards/create')
-  async createBoard(@Body() body: CreateBoardRequest) {
+  async createBoard(data: CreateBoardRequest) {
     const user = await this.auth.getCurrentUser()
     const token = this.generateInviteToken()
     const board = await this.prisma.board.create({
       data: {
-        title: body.title,
+        title: data.body.title,
         ownerUserId: user.id,
         invites: {
           create: {
@@ -131,46 +97,46 @@ export class AppController {
       },
     })
 
-    return new OkResponse(new Board(board))
+    return this.CreateBoardResponse({
+      status: 'ok',
+      data: board,
+    })
   }
 
-  @Post('/v1/boards/delete')
-  async deleteBoard(@Body() body: DeleteBoardRequest) {
+  async deleteBoard(data: DeleteBoardRequest) {
     const user = await this.auth.getCurrentUser()
     const board = await this.prisma.board.delete({
       select: {
         id: true,
       },
       where: {
-        id: body.id,
+        id: data.body.id,
         ownerUserId: user.id,
       },
     })
 
-    return new OkResponse({ id: board.id })
+    return this.DeleteBoardResponse({ status: 'ok', data: board })
   }
 
-  @Post('/v1/boards/update')
-  async updateBoard(@Body() body: UpdateBoardRequest) {
+  async updateBoard(data: UpdateBoardRequest) {
     const user = await this.auth.getCurrentUser()
     const board = await this.prisma.board.update({
       where: {
-        id: body.id,
+        id: data.body.id,
         ownerUserId: user.id,
       },
       data: {
-        title: body.title,
+        title: data.body.title,
       },
     })
 
-    return new OkResponse(new Board(board))
+    return this.UpdateBoardResponse({ status: 'ok', data: board })
   }
 
-  @Post('/v1/boards/join')
-  async joinBoard(@Body() body: JoinBoardRequest) {
+  async joinBoard(data: JoinBoardRequest) {
     const user = await this.auth.getCurrentUser()
     const invite = await this.prisma.boardInvite.findUnique({
-      where: { token: body.token },
+      where: { token: data.body.token },
       select: {
         boardId: true,
         type: true,
@@ -204,7 +170,7 @@ export class AppController {
       update: {},
     })
 
-    return new OkResponse(new JoinBoardResponse({ boardId: invite.boardId }))
+    return this.JoinBoardResponse({ status: 'ok', data: invite })
   }
 
   private generateInviteToken() {

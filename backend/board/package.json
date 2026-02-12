@@ -6,6 +6,7 @@
   "scripts": {
     "build": "nest build",
     "codegen:prisma": "prisma generate",
+    "codegen:openapi": "openapi-codegen -s ../../openapi/board/openapi.yaml -o ./src/schema",
     "lint:code": "eslint .",
     "lint:tsc": "tsc -b  --noEmit",
     "start:dev": "dotenv -- vite",
@@ -29,10 +30,13 @@
     "prisma": "catalog:",
     "reflect-metadata": "catalog:",
     "rxjs": "catalog:",
-    "ts-invariant": "catalog:"
+    "ts-invariant": "catalog:",
+    "valibot": "catalog:"
   },
   "devDependencies": {
     "@retro-flow/eslint-config": "workspace:*",
+    "@retro-flow/nest-common": "workspace:*",
+    "@retro-flow/openapi-codegen": "workspace:*",
     "@retro-flow/prettier-config": "workspace:*",
     "@types/cookie-parser": "1.4.10",
     "@types/express": "5.0.6",

@@ -3,7 +3,7 @@ import { Body, Controller, Post } from '@nestjs/common'
 import { AuthService } from '@app/auth-service'
 import { PrismaService } from '@app/prisma-service'
 import { Prisma } from '@app/prisma/client'
-import { DeleteColumnRequest, OkResponse, type CreateColumnRequest } from '@app/schema'
+import { DeleteColumnRequest, OkResponse, type CreateColumnRequest } from '@app/schema-legacy'
 
 import { ForbiddenException } from './exceptions'
 

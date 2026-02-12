@@ -4,8 +4,8 @@ import { JwtModule } from '@nestjs/jwt'
 import { KafkaModule } from '@retro-flow/nest-kafka'
 
 import { AnyExceptionFilter } from '@app/any-exception-filter'
-import { AppController } from '@app/app-controller'
 import { AuthService } from '@app/auth-service'
+import { BoardController } from '@app/board-controller'
 import { CardController } from '@app/card-controller'
 import { ColumnController } from '@app/column-controller'
 import { HttpExceptionFilter } from '@app/http-exception-filter'
@@ -26,7 +26,7 @@ import { AsyncContextModule } from '@app/vendor/async-context'
       brokers: ['localhost:9092'],
     }),
   ],
-  controllers: [AppController, ColumnController, CardController, LikeController],
+  controllers: [BoardController, ColumnController, CardController, LikeController],
   providers: [
     AuthService,
     PrismaService,

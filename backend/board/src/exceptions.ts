@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common'
 
-import { ErrorResponse, StatusEnum } from '@app/schema'
+import { ErrorResponse, StatusEnum } from '@app/schema-legacy'
 
 export class UnauthorizedException extends HttpException {
   constructor(payload: { message: string }) {

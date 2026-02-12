@@ -9,7 +9,7 @@ import {
 
 import { AuthService } from '@app/auth-service'
 import { PrismaService } from '@app/prisma-service'
-import { CreateCardLikeRequest, DeleteCardLikeRequest, OkResponse } from '@app/schema'
+import { CreateCardLikeRequest, DeleteCardLikeRequest, OkResponse } from '@app/schema-legacy'
 
 @Controller()
 export class LikeController {
