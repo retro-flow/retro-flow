@@ -37,6 +37,9 @@ catalogs:
     '@rollup/plugin-typescript':
       specifier: 12.3.0
       version: 12.3.0
+    '@types/express':
+      specifier: 5.0.6
+      version: 5.0.6
     '@types/node':
       specifier: 25.0.3
       version: 25.0.3
@@ -500,10 +503,20 @@ importers:
         version: 5.7.3
 
   packages/nest-common:
-    devDependencies:
+    dependencies:
       '@nestjs/common':
         specifier: 'catalog:'
         version: 11.0.1(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      chalk:
+        specifier: 'catalog:'
+        version: 5.6.2
+      rxjs:
+        specifier: 'catalog:'
+        version: 7.8.1
+      valibot:
+        specifier: 'catalog:'
+        version: 1.2.0(typescript@5.7.3)
+    devDependencies:
       '@retro-flow/eslint-config':
         specifier: workspace:*
         version: file:packages/eslint-config(eslint@9.39.2(jiti@2.6.1))(prettier@3.8.0)(typescript@5.7.3)
@@ -513,6 +526,9 @@ importers:
       '@rollup/plugin-typescript':
         specifier: 'catalog:'
         version: 12.3.0(rollup@4.55.1)(tslib@2.8.1)(typescript@5.7.3)
+      '@types/express':
+        specifier: 'catalog:'
+        version: 5.0.6
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.3
@@ -522,15 +538,9 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.8.0
-      rxjs:
-        specifier: 'catalog:'
-        version: 7.8.1
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
-      valibot:
-        specifier: 'catalog:'
-        version: 1.2.0(typescript@5.7.3)
 
   packages/nest-kafka:
     dependencies:
