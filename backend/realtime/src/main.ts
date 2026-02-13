@@ -4,9 +4,9 @@ import { fileURLToPath } from 'node:url'
 import { Logger as NestLogger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { ExpressAdapter, type NestExpressApplication } from '@nestjs/platform-express'
+import { ConsoleLoggerService } from '@retro-flow/nest-common/logger'
 
 import { AppModule } from '@app/app-module'
-import { ConsoleLoggerService } from '@app/console-logger-service'
 
 async function createApp() {
   if (import.meta.hot) {

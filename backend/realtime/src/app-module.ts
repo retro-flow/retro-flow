@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common'
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
 import { JwtModule } from '@nestjs/jwt'
+import {
+  AnyExceptionFilter,
+  HttpExceptionFilter,
+  TimeoutInterceptor,
+} from '@retro-flow/nest-common/infra'
 import { KafkaModule } from '@retro-flow/nest-kafka'
 
-import { AnyExceptionFilter } from '@app/any-exception-filter'
-import { HttpExceptionFilter } from '@app/http-exception-filter'
-import { TimeoutInterceptor } from '@app/timeout-interceptor'
 import { WsGateway } from '@app/ws-gateway'
 
 @Module({
