@@ -1,6 +1,7 @@
 import { ClassSerializerInterceptor, Module, ValidationPipe } from '@nestjs/common'
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 import { JwtModule } from '@nestjs/jwt'
+import { AsyncContextModule } from '@retro-flow/nest-common/async-context'
 import {
   AnyExceptionFilter,
   HttpExceptionFilter,
@@ -14,7 +15,6 @@ import { CardController } from '@app/card-controller'
 import { ColumnController } from '@app/column-controller'
 import { LikeController } from '@app/like-controller'
 import { PrismaService } from '@app/prisma-service'
-import { AsyncContextModule } from '@app/vendor/async-context'
 
 @Module({
   imports: [

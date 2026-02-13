@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from 'async_hooks'
 
+import type { Request, Response } from 'express'
 import { invariant } from 'ts-invariant'
 import { Injectable } from '@nestjs/common'
 
@@ -9,11 +10,11 @@ import type { ContextValue } from './async-context.types'
 export class ContextService {
   constructor(private storage: AsyncLocalStorage<ContextValue>) {}
 
-  get request() {
+  get request(): Request {
     return this.getStore().request
   }
 
-  get response() {
+  get response(): Response {
     return this.getStore().response
   }
 
