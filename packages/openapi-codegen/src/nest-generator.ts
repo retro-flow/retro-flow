@@ -71,6 +71,8 @@ function renderControllersFile(
     const className = `${toPascalCase(tag)}ControllerImpl`
     const methods: string[] = []
 
+    const mappers = new Set<string>()
+
     for (const operation of operations) {
       const decorator = getHttpDecoratorName(operation.method)
       const path = getNestPath(operation.path)
@@ -147,8 +149,12 @@ function renderControllersFile(
       `)
 
       if (responseMapper !== null) {
-        methods.push(responseMapper)
+        mappers.add(responseMapper)
       }
+    }
+
+    for (const mapper of mappers) {
+      methods.push(mapper)
     }
 
     lines.push([`@Controller()`, `export class ${className} {`, methods.join('\n'), `}`].join('\n'))
