@@ -1,8 +1,8 @@
 import { Injectable, type CanActivate } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { ContextService } from '@retro-flow/nest-common/async-context'
 
 import { ACCESS_TOKEN_COOKIE } from '@app/auth-constants'
-import { ContextService } from '@app/vendor/async-context'
 
 import { UnauthorizedException } from './exceptions'
 
