@@ -6,7 +6,15 @@ InviteType:
   type: string
   enum: [TEMPORARY, PERMANENT]
 
+# TODO: rename
 OkResponseBase:
+  type: object
+  required: [status]
+  properties:
+    status:
+      const: ok
+
+SuccessResponse:
   type: object
   required: [status]
   properties:
@@ -25,21 +33,36 @@ ErrorResponse:
       type: string
 
 Forbidden:
-  allOf:
-    - $ref: "#/ErrorResponse"
+  description: Forbidden
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorResponse"
 
 NotFound:
-  allOf:
-    - $ref: "#/ErrorResponse"
+  description: Resource not found
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorResponse"
 
 BadRequest:
-  allOf:
-    - $ref: "#/ErrorResponse"
+  description: Bad request (validation)
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorResponse"
 
 Unauthorized:
-  allOf:
-    - $ref: "#/ErrorResponse"
+  description: Unauthorized
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorResponse"
 
 InternalError:
-  allOf:
-    - $ref: "#/ErrorResponse"
+  description: Internal server error
+  content:
+    application/json:
+      schema:
+        $ref: "#/ErrorResponse"

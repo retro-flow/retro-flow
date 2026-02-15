@@ -1,0 +1,53 @@
+columns-create:
+  post:
+    tags: [Column]
+    summary: ""
+    operationId: createColumn
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/columns.yaml#/CreateColumnBody"
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/SuccessResponse"
+      "400":
+        $ref: "../components/schemas/common.yaml#/BadRequest"
+      "401":
+        $ref: "../components/schemas/common.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/schemas/common.yaml#/Forbidden"
+      "500":
+        $ref: "../components/schemas/common.yaml#/InternalError"
+
+columns-delete:
+  post:
+    tags: [Column]
+    summary: ""
+    operationId: deleteColumn
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/columns.yaml#/DeleteColumnBody"
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/SuccessResponse"
+      "400":
+        $ref: "../components/schemas/common.yaml#/BadRequest"
+      "401":
+        $ref: "../components/schemas/common.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/schemas/common.yaml#/Forbidden"
+      "500":
+        $ref: "../components/schemas/common.yaml#/InternalError"

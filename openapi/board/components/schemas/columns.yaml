@@ -1,0 +1,22 @@
+CreateColumnBody:
+  type: object
+  required: [boardId, title]
+  properties:
+    boardId:
+      type: string
+      format: uuid
+    title:
+      type: string
+      minLength: 1
+      maxLength: 200
+
+DeleteColumnBody:
+  type: object
+  required: [boardId, id]
+  properties:
+    boardId:
+      type: string
+      format: uuid
+    id:
+      type: string
+      format: uuid

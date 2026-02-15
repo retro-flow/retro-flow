@@ -9,6 +9,7 @@ tags:
     description: Boards endpoints
 
 paths:
+  # boards
   /v1/boards:
     $ref: "./paths/boards.yaml#/boards"
   /v1/boards/{boardId}:
@@ -22,6 +23,12 @@ paths:
   /v1/boards/join:
     $ref: "./paths/boards.yaml#/boards-join"
 
+  # columns
+  /v1/columns/create:
+    $ref: "./paths/columns.yaml#/columns-create"
+  /v1/columns/delete:
+    $ref: "./paths/columns.yaml#/columns-delete"
+
 components:
   securitySchemes:
     security_root:
@@ -31,6 +38,8 @@ components:
     # common
     StatusEnum:
       $ref: "./components/schemas/common.yaml#/StatusEnum"
+    SuccessResponse:
+      $ref: "./components/schemas/common.yaml#/SuccessResponse"
     OkResponseBase:
       $ref: "./components/schemas/common.yaml#/OkResponseBase"
     ErrorResponse:
@@ -83,3 +92,7 @@ components:
       $ref: "./components/schemas/boards.yaml#/JoinBoardResponse"
     UpdateBoardResponse:
       $ref: "./components/schemas/boards.yaml#/UpdateBoardResponse"
+
+    # columns
+    CreateColumnBody:
+      $ref: "./components/schemas/columns.yaml#/CreateColumnBody"

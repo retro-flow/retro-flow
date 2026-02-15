@@ -1,47 +1,49 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Controller, Inject } from '@nestjs/common'
 
 import { AuthService } from '@app/auth-service'
+import { ForbiddenException } from '@app/exceptions'
 import { PrismaService } from '@app/prisma-service'
 import { Prisma } from '@app/prisma/client'
-import { DeleteColumnRequest, OkResponse, type CreateColumnRequest } from '@app/schema-legacy'
-
-import { ForbiddenException } from './exceptions'
+import {
+  ColumnControllerImpl,
+  type CreateColumnRequest,
+  type DeleteColumnRequest,
+} from '@app/schema'
 
 @Controller()
-export class ColumnController {
-  constructor(
-    private auth: AuthService,
-    private prisma: PrismaService,
-  ) {}
+export class ColumnController extends ColumnControllerImpl {
+  @Inject(AuthService)
+  auth: AuthService
 
-  @Post('/v1/boards/columns/create')
-  async createColumn(@Body() body: CreateColumnRequest) {
+  @Inject(PrismaService)
+  prisma: PrismaService
+
+  async createColumn(data: CreateColumnRequest) {
     const user = await this.auth.getCurrentUser()
 
-    await this.assertBoardOwner(body.boardId, user.id)
+    await this.assertBoardOwner(data.body.boardId, user.id)
 
     await this.prisma.$transaction(async (tx) => {
-      const position = await this.getNextEndPosition(tx, body.boardId)
+      const position = await this.getNextEndPosition(tx, data.body.boardId)
 
       return tx.column.create({
-        data: { boardId: body.boardId, title: body.title, position },
+        data: { boardId: data.body.boardId, title: data.body.title, position },
       })
     })
 
-    return new OkResponse({})
+    return this.SuccessResponse({ status: 'ok' })
   }
 
-  @Post('/v1/boards/columns/delete')
-  async deleteColumn(@Body() body: DeleteColumnRequest) {
+  async deleteColumn(data: DeleteColumnRequest) {
     const user = await this.auth.getCurrentUser()
 
-    await this.assertBoardOwner(body.boardId, user.id)
+    await this.assertBoardOwner(data.body.boardId, user.id)
 
     await this.prisma.column.delete({
-      where: { id: body.id, boardId: body.boardId },
+      where: { id: data.body.id, boardId: data.body.boardId },
     })
 
-    return new OkResponse({})
+    return this.SuccessResponse({ status: 'ok' })
   }
 
   private async assertBoardOwner(boardId: string, userId: string) {
